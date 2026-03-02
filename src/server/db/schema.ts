@@ -10,9 +10,7 @@ import { index, sqliteTableCreator } from "drizzle-orm/sqlite-core";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = sqliteTableCreator(
-  (name) => `drive-tutorial_${name}`,
-);
+export const createTable = sqliteTableCreator((name) => `t-drive_${name}`);
 
 export const posts = createTable(
   "post",
