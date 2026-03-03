@@ -49,7 +49,7 @@ export default function DriveContents(props: {
             >
               T-Drive
             </Button>
-            {breadcrumbs.map((folder, index) => (
+            {breadcrumbs.map((folder) => (
               <div key={folder.id} className="flex items-center">
                 <ChevronRight className="mx-2 text-gray-500" size={16} />
                 <Button
