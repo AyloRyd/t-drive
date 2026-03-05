@@ -10,9 +10,8 @@ import Link from "next/link";
 export default function DriveContents(props: {
   files: (typeof files.$inferSelect)[];
   folders: (typeof folders.$inferSelect)[];
+  parents: (typeof folders.$inferSelect)[];
 }) {
-  const breadcrumbs: typeof props.folders = [];
-
   const handleUpload = () => {
     alert("Upload functionality would be implemented here");
   };
@@ -22,17 +21,20 @@ export default function DriveContents(props: {
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center">
-            <Link href="/f/1" className="mr-2 cursor-pointer text-gray-300">
+            <Link
+              href="/f/1"
+              className="mr-2 cursor-pointer font-semibold text-gray-200"
+            >
               T-Drive
             </Link>
-            {breadcrumbs.map(
+            {props.parents.map(
               (folder) =>
                 folder && (
                   <div key={folder.id} className="flex items-center">
                     <ChevronRight className="mx-2 text-gray-500" size={16} />
                     <Link
                       href={`/f/${folder.id}`}
-                      className="cursor-pointer text-gray-300"
+                      className="cursor-pointer text-gray-400 transition-colors hover:text-gray-100"
                     >
                       {folder.name}
                     </Link>
