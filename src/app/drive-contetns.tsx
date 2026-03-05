@@ -23,7 +23,7 @@ export default function DriveContents(props: {
           <div className="flex items-center">
             <Link
               href="/f/1"
-              className="mr-2 cursor-pointer font-semibold text-gray-200"
+              className="mr-2 cursor-pointer font-semibold text-gray-100"
             >
               T-Drive
             </Link>
