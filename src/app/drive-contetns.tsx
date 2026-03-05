@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Upload, ChevronRight } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { ChevronRight } from "lucide-react";
 import { FileRow, FolderRow } from "./file-row";
 import type { files_table, folders_table } from "~/server/db/schema";
 import Link from "next/link";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 export default function DriveContents(props: {
   files: (typeof files_table.$inferSelect)[];
@@ -42,13 +41,14 @@ export default function DriveContents(props: {
                 ),
             )}
           </div>
-          <Button
-            onClick={handleUpload}
-            className="cursor-pointer bg-cyan-800 text-white hover:bg-cyan-700"
-          >
-            <Upload className="mr-2" size={20} />
-            Upload
-          </Button>
+          <div>
+            <Show when="signed-out">
+              <SignInButton />
+            </Show>
+            <Show when="signed-in">
+              <UserButton />
+            </Show>
+          </div>
         </div>
         <div className="rounded-t-lg bg-gray-800">
           <div className="border-b border-gray-700 px-6 py-4">
