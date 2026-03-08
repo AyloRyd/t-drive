@@ -1,8 +1,8 @@
 import { Folder as FolderIcon, FileIcon } from "lucide-react";
 import Link from "next/link";
-import type { files_table, folders_table } from "~/server/db/schema";
+import type { DB_FileType, DB_FolderType } from "~/server/db/schema";
 
-export function FileRow(props: { file: typeof files_table.$inferSelect }) {
+export function FileRow(props: { file: DB_FileType }) {
   const { file } = props;
   return (
     <li className="hover:bg-gray-750 border-b border-gray-700 px-6 py-4">
@@ -18,15 +18,13 @@ export function FileRow(props: { file: typeof files_table.$inferSelect }) {
           </a>
         </div>
         <div className="col-span-3 text-gray-400">{"file"}</div>
-        <div className="col-span-3 text-gray-400">{file.size}</div>
+        <div className="col-span-3 text-gray-400">{`${(file.size / 1024 / 1024).toFixed(2)} MB`}</div>
       </div>
     </li>
   );
 }
 
-export function FolderRow(props: {
-  folder: typeof folders_table.$inferSelect;
-}) {
+export function FolderRow(props: { folder: DB_FolderType }) {
   const { folder } = props;
   return (
     <li className="hover:bg-gray-750 border-b border-gray-700 px-6 py-4">

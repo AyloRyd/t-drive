@@ -8,6 +8,18 @@ import {
 import { eq } from "drizzle-orm";
 
 export const QUERIES = {
+  getFolders: function (folderId: number) {
+    return db
+      .select()
+      .from(foldersSchema)
+      .where(eq(foldersSchema.parent, folderId));
+  },
+  getFiles: function (folderId: number) {
+    return db
+      .select()
+      .from(filesSchema)
+      .where(eq(filesSchema.parent, folderId));
+  },
   getAllParentsForFolder: async function (folderId: number) {
     const parents = [];
     let currentId: number | null = folderId;
@@ -25,18 +37,21 @@ export const QUERIES = {
     }
     return parents.slice(1);
   },
+};
 
-  getFolders: function (folderId: number) {
-    return db
-      .select()
-      .from(foldersSchema)
-      .where(eq(foldersSchema.parent, folderId));
-  },
-
-  getFiles: function (folderId: number) {
-    return db
-      .select()
-      .from(filesSchema)
-      .where(eq(filesSchema.parent, folderId));
+export const MUTATIONS = {
+  createFile: async function (input: {
+    file: {
+      name: string;
+      size: number;
+      url: string;
+      parent: number;
+    };
+    userId: string;
+  }) {
+    return await db.insert(filesSchema).values({
+      ...input.file,
+      parent: input.file.parent,
+    });
   },
 };

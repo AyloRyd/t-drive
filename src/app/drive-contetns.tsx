@@ -2,18 +2,25 @@
 
 import { ChevronRight } from "lucide-react";
 import { FileRow, FolderRow } from "./file-row";
-import type { files_table, folders_table } from "~/server/db/schema";
+import type { DB_FileType, DB_FolderType } from "~/server/db/schema";
 import Link from "next/link";
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import {
+  ClerkLoaded,
+  ClerkLoading,
+  Show,
+  SignInButton,
+  UserButton,
+} from "@clerk/nextjs";
+import { UploadButton } from "~/components/uploadthing";
+import { useRouter } from "next/navigation";
+import { Button } from "~/components/ui/button";
 
 export default function DriveContents(props: {
-  files: (typeof files_table.$inferSelect)[];
-  folders: (typeof folders_table.$inferSelect)[];
-  parents: (typeof folders_table.$inferSelect)[];
+  files: DB_FileType[];
+  folders: DB_FolderType[];
+  parents: DB_FolderType[];
 }) {
-  const handleUpload = () => {
-    alert("Upload functionality would be implemented here");
-  };
+  const navigate = useRouter();
 
   return (
     <div className="min-h-screen bg-gray-900 p-8 text-gray-100">
@@ -43,11 +50,24 @@ export default function DriveContents(props: {
           </div>
           <div>
             <Show when="signed-out">
-              <SignInButton />
+              <SignInButton>
+                <Button
+                  variant="secondary"
+                  className="cursor-pointer rounded-md"
+                >
+                  Sign In
+                </Button>
+              </SignInButton>
             </Show>
-            <Show when="signed-in">
-              <UserButton />
-            </Show>
+
+            <ClerkLoading>
+              <div className="h-8 w-8 animate-pulse rounded-full bg-gray-700" />
+            </ClerkLoading>
+            <ClerkLoaded>
+              <Show when="signed-in">
+                <UserButton />
+              </Show>
+            </ClerkLoaded>
           </div>
         </div>
         <div className="rounded-t-lg bg-gray-800">
@@ -67,6 +87,13 @@ export default function DriveContents(props: {
             ))}
           </ul>
         </div>
+        <UploadButton
+          endpoint="imageUploader"
+          className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-8"
+          onClientUploadComplete={() => {
+            navigate.refresh();
+          }}
+        />
       </div>
     </div>
   );
