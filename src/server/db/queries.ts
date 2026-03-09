@@ -37,6 +37,14 @@ export const QUERIES = {
     }
     return parents.slice(1);
   },
+  getFolderById: async function (folderId: number) {
+    return (
+      await db
+        .select()
+        .from(foldersSchema)
+        .where(eq(foldersSchema.id, folderId))
+    )[0];
+  },
 };
 
 export const MUTATIONS = {
@@ -51,7 +59,7 @@ export const MUTATIONS = {
   }) {
     return await db.insert(filesSchema).values({
       ...input.file,
-      parent: input.file.parent,
+      ownerId: input.userId,
     });
   },
 };

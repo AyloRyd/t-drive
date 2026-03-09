@@ -19,6 +19,7 @@ export default function DriveContents(props: {
   files: DB_FileType[];
   folders: DB_FolderType[];
   parents: DB_FolderType[];
+  currentFolderId: number;
 }) {
   const navigate = useRouter();
 
@@ -28,7 +29,7 @@ export default function DriveContents(props: {
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center">
             <Link
-              href="/f/1"
+              href="/"
               className="mr-2 cursor-pointer font-semibold text-gray-100"
             >
               T-Drive
@@ -92,6 +93,9 @@ export default function DriveContents(props: {
           className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-8"
           onClientUploadComplete={() => {
             navigate.refresh();
+          }}
+          input={{
+            folderId: props.currentFolderId,
           }}
         />
       </div>
