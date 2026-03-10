@@ -14,6 +14,7 @@ import {
 import { UploadButton } from "~/components/uploadthing";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
+import { usePostHog } from "posthog-js/react";
 
 export default function DriveContents(props: {
   files: DB_FileType[];
@@ -22,6 +23,8 @@ export default function DriveContents(props: {
   currentFolderId: number;
 }) {
   const navigate = useRouter();
+
+  const posthog = usePostHog();
 
   return (
     <div className="min-h-screen bg-gray-900 p-8 text-gray-100">
@@ -91,6 +94,13 @@ export default function DriveContents(props: {
         <UploadButton
           endpoint="driveUploader"
           className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-8"
+          onBeforeUploadBegin={(files) => {
+            posthog.capture("files_uploading", {
+              fileCount: files.length,
+            });
+
+            return files;
+          }}
           onClientUploadComplete={() => {
             navigate.refresh();
           }}
