@@ -17,6 +17,10 @@ export default async function FolderPage(props: {
     QUERIES.getAllParentsForFolder(parsedFolderId),
   ]);
 
+  if ("error" in folders || "error" in files) {
+    return <div>Unauthorized</div>;
+  }
+
   return (
     <DriveContents
       files={files}

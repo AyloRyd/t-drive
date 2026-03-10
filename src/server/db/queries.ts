@@ -5,21 +5,42 @@ import {
   files_table as filesSchema,
   folders_table as foldersSchema,
 } from "~/server/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { auth } from "@clerk/nextjs/server";
 
 export const QUERIES = {
-  getFolders: function (folderId: number) {
+  getFolders: async function (folderId: number) {
+    const session = await auth();
+    if (!session.userId) {
+      return { error: "Unauthorized" };
+    }
+
     return db
       .select()
       .from(foldersSchema)
-      .where(eq(foldersSchema.parent, folderId))
+      .where(
+        and(
+          eq(foldersSchema.parent, folderId),
+          eq(foldersSchema.ownerId, session.userId),
+        ),
+      )
       .orderBy(foldersSchema.name);
   },
-  getFiles: function (folderId: number) {
+  getFiles: async function (folderId: number) {
+    const session = await auth();
+    if (!session.userId) {
+      return { error: "Unauthorized" };
+    }
+
     return db
       .select()
       .from(filesSchema)
-      .where(eq(filesSchema.parent, folderId))
+      .where(
+        and(
+          eq(filesSchema.parent, folderId),
+          eq(filesSchema.ownerId, session.userId),
+        ),
+      )
       .orderBy(filesSchema.name);
   },
   getAllParentsForFolder: async function (folderId: number) {
