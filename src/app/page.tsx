@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { db } from "~/server/db";
 import { folders_table } from "~/server/db/schema";
+import Auth from "./auth";
 
 export default async function Page() {
   const rootFolder = (
@@ -12,5 +12,5 @@ export default async function Page() {
     throw new Error("Root folder not found");
   }
 
-  redirect(`/f/${rootFolder.id}`);
+  return <Auth rootFolder={rootFolder} />;
 }

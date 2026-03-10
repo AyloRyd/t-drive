@@ -49,7 +49,7 @@ export default function DriveContents(props: {
                 ),
             )}
           </div>
-          <div>
+          <div className="flex items-center gap-4">
             <Show when="signed-out">
               <SignInButton>
                 <Button
