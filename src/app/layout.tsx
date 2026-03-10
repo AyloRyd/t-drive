@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "T-Drive",
+  title: "t-drive",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
