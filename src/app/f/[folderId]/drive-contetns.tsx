@@ -15,6 +15,7 @@ import { UploadButton } from "~/components/uploadthing";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { usePostHog } from "posthog-js/react";
+import { CreateFolder } from "./create-folder";
 
 export default function DriveContents(props: {
   files: DB_FileType[];
@@ -69,7 +70,10 @@ export default function DriveContents(props: {
             </ClerkLoading>
             <ClerkLoaded>
               <Show when="signed-in">
-                <UserButton />
+                <div className="flex items-center gap-6">
+                  <CreateFolder currentFolderId={props.currentFolderId} />
+                  <UserButton />
+                </div>
               </Show>
             </ClerkLoaded>
           </div>
