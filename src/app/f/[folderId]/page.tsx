@@ -1,24 +1,34 @@
+import { auth } from "@clerk/nextjs/server";
 import DriveContents from "./drive-contetns";
+import { notFound } from "next/navigation";
 import { QUERIES } from "~/server/db/queries";
 
 export default async function FolderPage(props: {
   params: Promise<{ folderId: string }>;
 }) {
-  const params = await props.params;
-
-  const parsedFolderId = parseInt(params.folderId);
-  if (isNaN(parsedFolderId)) {
-    return <div>Invalid folder ID</div>;
+  const session = await auth();
+  if (!session.userId) {
+    notFound();
   }
 
-  const [folders, files, parents] = await Promise.all([
-    QUERIES.getFolders(parsedFolderId),
-    QUERIES.getFiles(parsedFolderId),
-    QUERIES.getAllParentsForFolder(parsedFolderId),
-  ]);
+  const params = await props.params;
+  const parsedFolderId = parseInt(params.folderId);
+  if (isNaN(parsedFolderId)) {
+    notFound();
+  }
 
-  if ("error" in folders || "error" in files) {
-    return <div>Unauthorized</div>;
+  const driveData = await QUERIES.getDriveData(parsedFolderId);
+  if ("error" in driveData) {
+    if (driveData.error === "Unauthorized") {
+      notFound();
+    }
+    throw new Error("Unexpected error occured");
+  }
+  const { files, folders, parents } = driveData;
+
+  const rootFolder = await QUERIES.getRootFolderForUser(session.userId);
+  if (!rootFolder) {
+    notFound();
   }
 
   return (
@@ -27,6 +37,7 @@ export default async function FolderPage(props: {
       folders={folders}
       parents={parents}
       currentFolderId={parsedFolderId}
+      rootFolderId={rootFolder.id}
     />
   );
 }

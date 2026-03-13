@@ -16,7 +16,6 @@ export default function HomePage() {
           "use server";
 
           const session = await auth();
-
           if (!session.userId) {
             return redirect("/sign-in");
           }
@@ -27,9 +26,9 @@ export default function HomePage() {
         <Button
           size="lg"
           type="submit"
-          className="cursor-pointer rounded-lg border border-gray-700 bg-gray-600 text-white transition-colors hover:bg-gray-700"
+          className="cursor-pointer rounded-lg border border-gray-700 bg-gray-700 text-white transition-colors hover:bg-gray-800"
         >
-          Get Started
+          Get started
         </Button>
       </form>
       <footer className="mt-16 text-sm text-gray-500">

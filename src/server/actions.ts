@@ -9,6 +9,24 @@ import { cookies } from "next/headers";
 
 const utApi = new UTApi();
 
+export async function createFolder(name: string, parentId: number) {
+  const session = await auth();
+  if (!session.userId) {
+    return { error: "Unauthorized" };
+  }
+
+  await db.insert(folders_table).values({
+    name,
+    parent: parentId,
+    ownerId: session.userId,
+  });
+
+  const c = await cookies();
+  c.set("force-refresh", JSON.stringify(Math.random()));
+
+  return { success: true };
+}
+
 export async function deleteFile(fileId: number) {
   const session = await auth();
   if (!session.userId) {
@@ -124,24 +142,6 @@ export async function deleteFolder(folderId: number) {
         eq(folders_table.ownerId, session.userId),
       ),
     );
-
-  const c = await cookies();
-  c.set("force-refresh", JSON.stringify(Math.random()));
-
-  return { success: true };
-}
-
-export async function createFolder(name: string, parentId: number) {
-  const session = await auth();
-  if (!session.userId) {
-    return { error: "Unauthorized" };
-  }
-
-  await db.insert(folders_table).values({
-    name,
-    parent: parentId,
-    ownerId: session.userId,
-  });
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));

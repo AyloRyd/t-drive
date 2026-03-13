@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -9,7 +10,6 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
@@ -23,11 +23,12 @@ export function CreateFolder({ currentFolderId }: { currentFolderId: number }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer rounded-md bg-gray-700 text-gray-100 hover:bg-gray-600 hover:text-gray-100">
+        <li className="flex cursor-pointer items-center justify-center gap-4 px-6 py-4 text-gray-400 transition-colors hover:bg-gray-700/50">
+          <Plus size={20} />
           New folder
-        </Button>
+        </li>
       </DialogTrigger>
-      <DialogContent className="overflow-hidden rounded-2xl border-gray-700 bg-gray-900 p-0 text-gray-100 sm:max-w-sm">
+      <DialogContent className="overflow-hidden rounded-xl border border-gray-700/50 bg-gray-900/95 p-0 text-gray-100 shadow-2xl backdrop-blur-md sm:max-w-sm">
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -36,36 +37,35 @@ export function CreateFolder({ currentFolderId }: { currentFolderId: number }) {
             setNewFolderName("");
           }}
         >
-          <DialogHeader className="p-6 text-left">
+          <DialogHeader className="px-6 pt-6 pb-4 text-left">
             <DialogTitle>New folder</DialogTitle>
             <DialogDescription className="text-gray-400">
               Enter a name for your new folder.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 px-6 pb-4">
-            <div className="grid gap-2 text-gray-100">
-              <Input
-                id="folder-name"
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
-                placeholder="New folder"
-                className="border-gray-700 bg-gray-800"
-                autoFocus
-              />
-            </div>
+          <div className="px-6 pb-6">
+            <Input
+              id="folder-name"
+              value={newFolderName}
+              required
+              onChange={(e) => setNewFolderName(e.target.value)}
+              placeholder="E.g., Vacation Photos"
+              className="border-gray-700 bg-gray-800/50 text-white placeholder:text-gray-500 focus-visible:ring-gray-600"
+              autoFocus
+            />
           </div>
-          <DialogFooter className="m-0 mt-2 flex-row border-t border-gray-700 bg-gray-800 px-6 py-4">
+          <DialogFooter className="flex-row justify-end gap-2 border-t border-gray-800 bg-gray-800 p-4 sm:justify-end">
             <DialogClose asChild>
               <Button
                 type="button"
                 variant="outline"
-                className="cursor-pointer rounded-md border-none bg-gray-700 text-gray-100 hover:bg-gray-600 hover:text-gray-100"
+                className="cursor-pointer rounded-lg border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-800 hover:text-gray-300"
               >
                 Cancel
               </Button>
             </DialogClose>
             <Button
-              className="cursor-pointer rounded-md bg-blue-800 text-gray-100 hover:bg-blue-700 hover:text-gray-100"
+              className="cursor-pointer rounded-lg border border-gray-700 bg-gray-700 text-white transition-colors hover:bg-gray-600"
               type="submit"
             >
               Create

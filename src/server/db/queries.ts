@@ -41,6 +41,28 @@ export const QUERIES = {
       )
       .orderBy(filesSchema.name);
   },
+  getDriveData: async function (folderId: number) {
+    const session = await auth();
+    if (!session.userId) {
+      return { error: "Unauthorized" };
+    }
+
+    const folder = await QUERIES.getFolderById(folderId);
+    if (folder?.ownerId !== session.userId) {
+      return { error: "Unauthorized" };
+    }
+
+    const [folders, files, parents] = await Promise.all([
+      QUERIES.getFolders(folderId),
+      QUERIES.getFiles(folderId),
+      QUERIES.getAllParentsForFolder(folderId),
+    ]);
+    if ("error" in folders || "error" in files || "error" in parents) {
+      return { error: "Unexpected error occured" };
+    }
+
+    return { folders, files, parents };
+  },
   getAllParentsForFolder: async function (folderId: number) {
     const parents = [];
     let currentId: number | null = folderId;
@@ -51,7 +73,7 @@ export const QUERIES = {
         .where(eq(foldersSchema.id, currentId));
 
       if (!folder[0]) {
-        throw new Error("Parent folder not found");
+        return { error: "Parent folder not found" };
       }
       parents.unshift(folder[0]);
       currentId = folder[0]?.parent;
