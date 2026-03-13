@@ -18,7 +18,8 @@ Deployed on Vercel: [check it out!](https://t-drive-cloud.vercel.app)
 - [x] Finish styles for home page and onboarding
 - [x] Responsive design
 - [x] Access control
-- [ ] Folder renaming
+- [x] Folder renaming
+- [ ] File renaming
 - [ ] Folder moving
 - [ ] Folder stats
 - [ ] Drag and drop

@@ -1,6 +1,5 @@
 "use client";
 
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -14,41 +13,56 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import { createFolder } from "~/server/actions";
 
-export function CreateFolder({ currentFolderId }: { currentFolderId: number }) {
+interface FolderDialogProps {
+  trigger: React.ReactNode;
+  title: string;
+  description: string;
+  submitLabel: string;
+  defaultValue?: string;
+  onSubmit: (name: string) => Promise<void>;
+}
+
+export function FolderDialog({
+  trigger,
+  title,
+  description,
+  submitLabel,
+  defaultValue = "",
+  onSubmit,
+}: FolderDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [newFolderName, setNewFolderName] = useState("");
+  const [folderName, setFolderName] = useState(defaultValue);
+
+  function handleOpenChange(open: boolean) {
+    setIsOpen(open);
+    if (open) setFolderName(defaultValue);
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <li className="flex cursor-pointer items-center justify-center gap-4 px-6 py-4 text-gray-400 transition-colors hover:bg-gray-700/50">
-          <Plus size={20} />
-          New folder
-        </li>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="overflow-hidden rounded-xl border border-gray-700/50 bg-gray-900/95 p-0 text-gray-100 shadow-2xl backdrop-blur-md sm:max-w-sm">
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            await createFolder(newFolderName || "New folder", currentFolderId);
+            await onSubmit(folderName || defaultValue || "New folder");
             setIsOpen(false);
-            setNewFolderName("");
+            setFolderName(defaultValue);
           }}
         >
           <DialogHeader className="px-6 pt-6 pb-4 text-left">
-            <DialogTitle>New folder</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
             <DialogDescription className="text-gray-400">
-              Enter a name for your new folder.
+              {description}
             </DialogDescription>
           </DialogHeader>
           <div className="px-6 pb-6">
             <Input
               id="folder-name"
-              value={newFolderName}
+              value={folderName}
               required
-              onChange={(e) => setNewFolderName(e.target.value)}
+              onChange={(e) => setFolderName(e.target.value)}
               placeholder="E.g., Vacation Photos"
               className="border-gray-700 bg-gray-800/50 text-white placeholder:text-gray-500 focus-visible:ring-gray-600"
               autoFocus
@@ -68,7 +82,7 @@ export function CreateFolder({ currentFolderId }: { currentFolderId: number }) {
               className="cursor-pointer rounded-lg border border-gray-700 bg-gray-700 text-white transition-colors hover:bg-gray-600"
               type="submit"
             >
-              Create
+              {submitLabel}
             </Button>
           </DialogFooter>
         </form>

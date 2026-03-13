@@ -27,6 +27,42 @@ export async function createFolder(name: string, parentId: number) {
   return { success: true };
 }
 
+export async function renameFolder(folderId: number, name: string) {
+  const session = await auth();
+  if (!session.userId) {
+    return { error: "Unauthorized" };
+  }
+
+  const [folder] = await db
+    .select()
+    .from(folders_table)
+    .where(
+      and(
+        eq(folders_table.id, folderId),
+        eq(folders_table.ownerId, session.userId),
+      ),
+    );
+
+  if (!folder) {
+    return { error: "Folder not found" };
+  }
+
+  await db
+    .update(folders_table)
+    .set({ name })
+    .where(
+      and(
+        eq(folders_table.id, folderId),
+        eq(folders_table.ownerId, session.userId),
+      ),
+    );
+
+  const c = await cookies();
+  c.set("force-refresh", JSON.stringify(Math.random()));
+
+  return { success: true };
+}
+
 export async function deleteFile(fileId: number) {
   const session = await auth();
   if (!session.userId) {

@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import { FileRow, FolderRow } from "./file-row";
+import { ChevronRight, Plus } from "lucide-react";
+import { FileRow, FolderRow } from "./drive-row";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,7 +9,8 @@ import { ClerkLoaded, ClerkLoading, Show, UserButton } from "@clerk/nextjs";
 import { UploadButton } from "~/components/uploadthing";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
-import { CreateFolder } from "./create-folder";
+import { FolderDialog } from "./folder-dialog";
+import { createFolder } from "~/server/actions";
 
 export default function DriveContents(props: {
   files: DBFileType[];
@@ -77,9 +78,20 @@ export default function DriveContents(props: {
             {props.files.map((file) => (
               <FileRow key={file.id} file={file} />
             ))}
-            <CreateFolder
+            <FolderDialog
               key={"new-folder"}
-              currentFolderId={props.currentFolderId}
+              trigger={
+                <li className="flex cursor-pointer items-center justify-center gap-4 px-6 py-4 text-gray-400 transition-colors hover:bg-gray-700/50">
+                  <Plus size={20} />
+                  New folder
+                </li>
+              }
+              title="New folder"
+              description="Enter a name for your new folder."
+              submitLabel="Create"
+              onSubmit={async (name) => {
+                await createFolder(name, props.currentFolderId);
+              }}
             />
           </ul>
         </div>
