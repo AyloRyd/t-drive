@@ -7,7 +7,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { deleteFile, deleteFolder, renameFolder } from "~/server/actions";
+import { deleteFile, renameFile } from "~/server/actions/file.actions";
+import { deleteFolder, renameFolder } from "~/server/actions/folder.actions";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { FolderDialog } from "./folder-dialog";
 import { useState } from "react";
@@ -105,13 +106,21 @@ export function FileRowActions({ file }: { file: DBFileType }) {
         className={popoverContentClass}
         onClick={(e) => e.stopPropagation()}
       >
-        <span
-          title="This feature is not yet implemented for files"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-500 opacity-50 select-none"
-        >
-          <Pencil size={15} />
-          Edit
-        </span>
+        <FolderDialog
+          trigger={
+            <button className={menuItemClass}>
+              <Pencil size={15} />
+              Edit
+            </button>
+          }
+          title="Rename file"
+          description="Enter a new name for this file."
+          submitLabel="Save"
+          defaultValue={file.name}
+          onSubmit={async (name) => {
+            await renameFile(file.id, name);
+          }}
+        />
 
         <button
           className={dangerItemClass}

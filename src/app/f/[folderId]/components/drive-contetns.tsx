@@ -9,7 +9,7 @@ import { ClerkLoaded, ClerkLoading, Show, UserButton } from "@clerk/nextjs";
 import { UploadButton } from "~/components/uploadthing";
 import { useRouter } from "next/navigation";
 import { FolderDialog } from "./folder-dialog";
-import { createFolder } from "~/server/actions";
+import { createFolder } from "~/server/actions/folder.actions";
 
 export default function DriveContents(props: {
   files: DBFileType[];
