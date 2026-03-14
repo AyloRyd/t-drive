@@ -1,7 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
-import { MUTATIONS, QUERIES } from "~/server/db/queries";
+import { QUERIES } from "~/server/db/queries";
+import { onboardUser } from "~/server/actions/onboard.actions";
 import { HardDrive } from "lucide-react";
 
 export default async function DrivePage() {
@@ -35,9 +36,12 @@ export default async function DrivePage() {
               return redirect("/sign-in");
             }
 
-            const rootFolderId = await MUTATIONS.onboardUser(session.userId);
+            const result = await onboardUser();
+            if (result.error || !result.rootFolderId) {
+              return redirect("/sign-in");
+            }
 
-            return redirect(`/f/${rootFolderId}`);
+            return redirect(`/f/${result.rootFolderId}`);
           }}
         >
           <Button className="cursor-pointer rounded-lg border border-gray-700 bg-gray-700 px-6 text-white transition-colors hover:bg-gray-800">

@@ -6,63 +6,53 @@ import {
   folders_table as foldersSchema,
 } from "~/server/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
-import { auth } from "@clerk/nextjs/server";
 
 export const QUERIES = {
-  getFolders: async function (folderId: number) {
-    const session = await auth();
-    if (!session.userId) {
-      return { error: "Unauthorized" };
-    }
+  getFolders: async function (folderId: number, userId: string) {
     return db
       .select()
       .from(foldersSchema)
       .where(
         and(
           eq(foldersSchema.parent, folderId),
-          eq(foldersSchema.ownerId, session.userId),
+          eq(foldersSchema.ownerId, userId),
         ),
       )
       .orderBy(foldersSchema.name);
   },
-  getFiles: async function (folderId: number) {
-    const session = await auth();
-    if (!session.userId) {
-      return { error: "Unauthorized" };
-    }
+
+  getFiles: async function (folderId: number, userId: string) {
     return db
       .select()
       .from(filesSchema)
       .where(
         and(
           eq(filesSchema.parent, folderId),
-          eq(filesSchema.ownerId, session.userId),
+          eq(filesSchema.ownerId, userId),
         ),
       )
       .orderBy(filesSchema.name);
   },
-  getDriveData: async function (folderId: number) {
-    const session = await auth();
-    if (!session.userId) {
-      return { error: "Unauthorized" };
-    }
 
+  getDriveData: async function (folderId: number, userId: string) {
     const folder = await QUERIES.getFolderById(folderId);
-    if (folder?.ownerId !== session.userId) {
+    if (folder?.ownerId !== userId) {
       return { error: "Unauthorized" };
     }
 
     const [folders, files, parents] = await Promise.all([
-      QUERIES.getFolders(folderId),
-      QUERIES.getFiles(folderId),
+      QUERIES.getFolders(folderId, userId),
+      QUERIES.getFiles(folderId, userId),
       QUERIES.getAllParentsForFolder(folderId),
     ]);
-    if ("error" in folders || "error" in files || "error" in parents) {
+
+    if ("error" in parents) {
       return { error: "Unexpected error occured" };
     }
 
-    return { folders, files, parents };
+    return { folders, files, parents: parents as typeof foldersSchema.$inferSelect[] };
   },
+
   getAllParentsForFolder: async function (folderId: number) {
     const parents = [];
     let currentId: number | null = folderId;
@@ -80,6 +70,7 @@ export const QUERIES = {
     }
     return parents.slice(1);
   },
+
   getFolderById: async function (folderId: number) {
     return (
       await db
@@ -88,6 +79,7 @@ export const QUERIES = {
         .where(eq(foldersSchema.id, folderId))
     )[0];
   },
+
   getRootFolderForUser: async function (userId: string) {
     const folder = await db
       .select()
@@ -96,54 +88,5 @@ export const QUERIES = {
         and(eq(foldersSchema.ownerId, userId), isNull(foldersSchema.parent)),
       );
     return folder[0];
-  },
-};
-
-export const MUTATIONS = {
-  createFile: async function (input: {
-    file: {
-      name: string;
-      size: number;
-      url: string;
-      parent: number;
-    };
-    userId: string;
-  }) {
-    return await db.insert(filesSchema).values({
-      ...input.file,
-      ownerId: input.userId,
-    });
-  },
-  onboardUser: async function (userId: string) {
-    const rootFolder = await db
-      .insert(foldersSchema)
-      .values({
-        name: "Root",
-        parent: null,
-        ownerId: userId,
-      })
-      .$returningId();
-
-    const rootFolderId = rootFolder[0]!.id;
-
-    await db.insert(foldersSchema).values([
-      {
-        name: "Trash",
-        parent: rootFolderId,
-        ownerId: userId,
-      },
-      {
-        name: "Shared",
-        parent: rootFolderId,
-        ownerId: userId,
-      },
-      {
-        name: "Documents",
-        parent: rootFolderId,
-        ownerId: userId,
-      },
-    ]);
-
-    return rootFolderId;
   },
 };

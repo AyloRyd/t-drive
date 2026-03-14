@@ -17,7 +17,7 @@ export default async function FolderPage(props: {
     notFound();
   }
 
-  const driveData = await QUERIES.getDriveData(parsedFolderId);
+  const driveData = await QUERIES.getDriveData(parsedFolderId, session.userId);
   if ("error" in driveData) {
     if (driveData.error === "Unauthorized") {
       notFound();

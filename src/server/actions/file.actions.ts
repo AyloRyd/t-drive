@@ -6,8 +6,33 @@ import { files_table } from "../db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { UTApi } from "uploadthing/server";
 import { cookies } from "next/headers";
+import { MUTATIONS } from "../db/mutations";
 
 const utApi = new UTApi();
+
+export async function createFile(input: {
+  file: {
+    name: string;
+    size: number;
+    url: string;
+    parent: number;
+  };
+}) {
+  const session = await auth();
+  if (!session.userId) {
+    return { error: "Unauthorized" };
+  }
+
+  await MUTATIONS.createFile({
+    file: input.file,
+    userId: session.userId,
+  });
+
+  const c = await cookies();
+  c.set("force-refresh", JSON.stringify(Math.random()));
+
+  return { success: true };
+}
 
 export async function renameFile(fileId: number, name: string) {
   const session = await auth();
@@ -31,15 +56,9 @@ export async function renameFile(fileId: number, name: string) {
     fileKey,
     newName: name,
   });
-
   console.log(utapiResult);
 
-  await db
-    .update(files_table)
-    .set({ name })
-    .where(
-      and(eq(files_table.id, fileId), eq(files_table.ownerId, session.userId)),
-    );
+  await MUTATIONS.renameFileById(fileId, session.userId, name);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));
@@ -67,17 +86,11 @@ export async function deleteFile(fileId: number) {
   const utapiResult = await utApi.deleteFiles([
     file.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
   ]);
-
   console.log(utapiResult);
 
-  const dbDeleteResult = await db
-    .delete(files_table)
-    .where(eq(files_table.id, fileId));
-
-  console.log(dbDeleteResult);
+  await MUTATIONS.deleteFileById(fileId, session.userId);
 
   const c = await cookies();
-
   c.set("force-refresh", JSON.stringify(Math.random()));
 
   return { success: true };
