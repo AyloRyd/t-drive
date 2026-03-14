@@ -8,7 +8,6 @@ import Image from "next/image";
 import { ClerkLoaded, ClerkLoading, Show, UserButton } from "@clerk/nextjs";
 import { UploadButton } from "~/components/uploadthing";
 import { useRouter } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
 import { FolderDialog } from "./folder-dialog";
 import { createFolder } from "~/server/actions";
 
@@ -20,9 +19,6 @@ export default function DriveContents(props: {
   rootFolderId: number;
 }) {
   const navigate = useRouter();
-
-  const posthog = usePostHog();
-
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-gray-800 p-4 font-sans text-gray-100 md:p-8">
       <div className="mx-auto max-w-6xl">
@@ -99,13 +95,6 @@ export default function DriveContents(props: {
           <UploadButton
             endpoint="driveUploader"
             className="mt-2"
-            onBeforeUploadBegin={(files) => {
-              posthog.capture("files_uploading", {
-                fileCount: files.length,
-              });
-
-              return files;
-            }}
             onClientUploadComplete={() => {
               navigate.refresh();
             }}
