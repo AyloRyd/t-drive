@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
-import DriveContents from "./drive-contetns";
 import { notFound } from "next/navigation";
 import { QUERIES } from "~/server/db/queries";
+import DriveContents from "./components/drive-contetns";
 
 export default async function FolderPage(props: {
   params: Promise<{ folderId: string }>;

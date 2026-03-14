@@ -12,19 +12,3 @@ A file storage app made with:
 - Shadcn UI
 
 Deployed on Vercel: [check it out!](https://t-drive-cloud.vercel.app)
-
-## TODO
-
-- [x] Finish styles for home page and onboarding
-- [x] Responsive design
-- [x] Access control
-- [x] Folder renaming
-- [ ] File renaming
-- [ ] Folder moving
-- [ ] Folder stats
-- [ ] Drag and drop
-- [ ] Search
-- [ ] Selecting multiple items
-- [ ] File view page
-- [ ] Toasts!
-- [ ] Gray out a row while it's being deleted
