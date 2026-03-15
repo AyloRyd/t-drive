@@ -12,12 +12,13 @@ export default async function FolderPage(props: {
   }
 
   const params = await props.params;
-  const parsedFolderId = parseInt(params.folderId);
-  if (isNaN(parsedFolderId)) {
-    notFound();
-  }
+  const folderId = params.folderId;
+  // No need for isNaN check if folderId is expected to be a string
+  // if (isNaN(parsedFolderId)) {
+  //   notFound();
+  // }
 
-  const driveData = await QUERIES.getDriveData(parsedFolderId, session.userId);
+  const driveData = await QUERIES.getDriveData(folderId, session.userId);
   if ("error" in driveData) {
     if (driveData.error === "Unauthorized") {
       notFound();
@@ -36,7 +37,7 @@ export default async function FolderPage(props: {
       files={files}
       folders={folders}
       parents={parents}
-      currentFolderId={parsedFolderId}
+      currentFolderId={folderId}
       rootFolderId={rootFolder.id}
     />
   );

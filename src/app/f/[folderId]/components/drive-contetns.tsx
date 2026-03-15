@@ -15,8 +15,8 @@ export default function DriveContents(props: {
   files: DBFileType[];
   folders: DBFolderType[];
   parents: DBFolderType[];
-  currentFolderId: number;
-  rootFolderId: number;
+  currentFolderId: string;
+  rootFolderId: string;
 }) {
   const navigate = useRouter();
   return (

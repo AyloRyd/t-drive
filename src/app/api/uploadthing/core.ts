@@ -16,7 +16,7 @@ export const ourFileRouter = {
   })
     .input(
       z.object({
-        folderId: z.number(),
+        folderId: z.string(),
       }),
     )
     .middleware(async ({ input }) => {

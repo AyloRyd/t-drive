@@ -1,52 +1,46 @@
 import {
-  int,
+  pgTable,
   text,
-  index,
-  singlestoreTableCreator,
-  bigint,
   timestamp,
-} from "drizzle-orm/singlestore-core";
+  uuid,
+  index,
+  integer,
+} from "drizzle-orm/pg-core";
 
-export const createTable = singlestoreTableCreator((name) => `t_drive_${name}`);
-
-export const files_table = createTable(
+export const files_table = pgTable(
   "files_table",
   {
-    id: bigint("id", { mode: "number", unsigned: true })
-      .primaryKey()
-      .autoincrement(),
+    id: uuid("id").primaryKey().defaultRandom(),
     ownerId: text("owner_id").notNull(),
     name: text("name").notNull(),
-    size: int("size").notNull(),
+    size: integer("size").notNull(),
     url: text("url").notNull(),
-    parent: bigint("parent", { mode: "number", unsigned: true }).notNull(),
+    parent: text("parent").notNull(),
     created_at: timestamp("created_at").notNull().defaultNow(),
   },
   (t) => {
     return [
-      index("parent_index").on(t.parent),
-      index("owner_id_index").on(t.ownerId),
+      index("files_parent_index").on(t.parent),
+      index("files_owner_id_index").on(t.ownerId),
     ];
   },
 );
 
 export type DBFileType = typeof files_table.$inferSelect;
 
-export const folders_table = createTable(
+export const folders_table = pgTable(
   "folders_table",
   {
-    id: bigint("id", { mode: "number", unsigned: true })
-      .primaryKey()
-      .autoincrement(),
+    id: uuid("id").primaryKey().defaultRandom(),
     ownerId: text("owner_id").notNull(),
     name: text("name").notNull(),
-    parent: bigint("parent", { mode: "number", unsigned: true }),
+    parent: text("parent"),
     created_at: timestamp("created_at").notNull().defaultNow(),
   },
   (t) => {
     return [
-      index("parent_index").on(t.parent),
-      index("owner_id_index").on(t.ownerId),
+      index("folders_parent_index").on(t.parent),
+      index("folders_owner_id_index").on(t.ownerId),
     ];
   },
 );

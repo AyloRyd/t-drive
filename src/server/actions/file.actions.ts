@@ -15,7 +15,7 @@ export async function createFile(input: {
     name: string;
     size: number;
     url: string;
-    parent: number;
+    parent: string;
   };
 }) {
   const session = await auth();
@@ -34,7 +34,7 @@ export async function createFile(input: {
   return { success: true };
 }
 
-export async function renameFile(fileId: number, name: string) {
+export async function renameFile({ fileId, newName }: { fileId: string; newName: string }) {
   const session = await auth();
   if (!session.userId) {
     return { error: "Unauthorized" };
@@ -54,11 +54,11 @@ export async function renameFile(fileId: number, name: string) {
   const fileKey = file.url.replace("https://8wqc1o9kco.ufs.sh/f/", "");
   const utapiResult = await utApi.renameFiles({
     fileKey,
-    newName: name,
+    newName: newName,
   });
   console.log(utapiResult);
 
-  await MUTATIONS.renameFileById(fileId, session.userId, name);
+  await MUTATIONS.renameFileById(fileId, session.userId, newName);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));
@@ -66,7 +66,7 @@ export async function renameFile(fileId: number, name: string) {
   return { success: true };
 }
 
-export async function deleteFile(fileId: number) {
+export const deleteFile = async (fileId: string) => {
   const session = await auth();
   if (!session.userId) {
     return { error: "Unauthorized" };

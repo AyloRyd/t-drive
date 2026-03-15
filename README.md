@@ -5,7 +5,8 @@ A file storage app made with:
 - TypeScript
 - React
 - Next.js
-- SingleStore
+- Neon
+- Drizzle ORM
 - Clerk
 - Uploadthing
 - Tailwind CSS

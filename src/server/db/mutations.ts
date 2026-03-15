@@ -13,7 +13,7 @@ export const MUTATIONS = {
       name: string;
       size: number;
       url: string;
-      parent: number;
+      parent: string;
     };
     userId: string;
   }) {
@@ -24,7 +24,7 @@ export const MUTATIONS = {
   },
 
   renameFileById: async function (
-    fileId: number,
+    fileId: string,
     userId: string,
     newName: string,
   ) {
@@ -34,7 +34,7 @@ export const MUTATIONS = {
       .where(and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, userId)));
   },
 
-  deleteFileById: async function (fileId: number, userId: string) {
+  deleteFileById: async function (fileId: string, userId: string) {
     return await db
       .delete(filesSchema)
       .where(and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, userId)));
@@ -42,7 +42,7 @@ export const MUTATIONS = {
 
   createFolderForUser: async function (
     name: string,
-    parentId: number,
+    parentId: string,
     userId: string,
   ) {
     return await db.insert(foldersSchema).values({
@@ -53,7 +53,7 @@ export const MUTATIONS = {
   },
 
   renameFolderById: async function (
-    folderId: number,
+    folderId: string,
     userId: string,
     newName: string,
   ) {
@@ -65,13 +65,13 @@ export const MUTATIONS = {
       );
   },
 
-  deleteFolderAndChildren: async function (folderId: number, userId: string) {
+  deleteFolderAndChildren: async function (folderId: string, userId: string) {
     const allFolders = await db
       .select()
       .from(foldersSchema)
       .where(eq(foldersSchema.ownerId, userId));
 
-    const foldersToDelete = new Set<number>([folderId]);
+    const foldersToDelete = new Set<string>([folderId]);
     let added = true;
     while (added) {
       added = false;
@@ -130,7 +130,7 @@ export const MUTATIONS = {
         parent: null,
         ownerId: userId,
       })
-      .$returningId();
+      .returning();
 
     const rootFolderId = rootFolder[0]!.id;
 

@@ -59,7 +59,7 @@ export function FolderRowActions({ folder }: { folder: DBFolderType }) {
           submitLabel="Save"
           defaultValue={folder.name}
           onSubmit={async (name) => {
-            await renameFolder(folder.id, name);
+            await renameFolder({ folderId: folder.id, newName: name });
           }}
         />
 
@@ -118,7 +118,7 @@ export function FileRowActions({ file }: { file: DBFileType }) {
           submitLabel="Save"
           defaultValue={file.name}
           onSubmit={async (name) => {
-            await renameFile(file.id, name);
+            await renameFile({ fileId: file.id, newName: name });
           }}
         />
 

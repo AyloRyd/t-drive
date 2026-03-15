@@ -8,7 +8,7 @@ import {
 import { and, eq, isNull } from "drizzle-orm";
 
 export const QUERIES = {
-  getFolders: async function (folderId: number, userId: string) {
+  getFolders: async function (folderId: string, userId: string) {
     return db
       .select()
       .from(foldersSchema)
@@ -21,7 +21,7 @@ export const QUERIES = {
       .orderBy(foldersSchema.name);
   },
 
-  getFiles: async function (folderId: number, userId: string) {
+  getFiles: async function (folderId: string, userId: string) {
     return db
       .select()
       .from(filesSchema)
@@ -34,7 +34,7 @@ export const QUERIES = {
       .orderBy(filesSchema.name);
   },
 
-  getDriveData: async function (folderId: number, userId: string) {
+  getDriveData: async function (folderId: string, userId: string) {
     const folder = await QUERIES.getFolderById(folderId);
     if (folder?.ownerId !== userId) {
       return { error: "Unauthorized" };
@@ -53,9 +53,9 @@ export const QUERIES = {
     return { folders, files, parents: parents as typeof foldersSchema.$inferSelect[] };
   },
 
-  getAllParentsForFolder: async function (folderId: number) {
+  getAllParentsForFolder: async function (folderId: string) {
     const parents = [];
-    let currentId: number | null = folderId;
+    let currentId: string | null = folderId;
     while (currentId !== null) {
       const folder = await db
         .selectDistinct()
@@ -71,7 +71,7 @@ export const QUERIES = {
     return parents.slice(1);
   },
 
-  getFolderById: async function (folderId: number) {
+  getFolderById: async function (folderId: string) {
     return (
       await db
         .select()

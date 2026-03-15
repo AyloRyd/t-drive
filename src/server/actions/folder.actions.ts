@@ -10,7 +10,7 @@ import { MUTATIONS } from "../db/mutations";
 
 const utApi = new UTApi();
 
-export async function createFolder(name: string, parentId: number) {
+export async function createFolder(name: string, parentId: string) {
   const session = await auth();
   if (!session.userId) {
     return { error: "Unauthorized" };
@@ -24,7 +24,7 @@ export async function createFolder(name: string, parentId: number) {
   return { success: true };
 }
 
-export async function renameFolder(folderId: number, name: string) {
+export async function renameFolder({ folderId, newName }: { folderId: string; newName: string }) {
   const session = await auth();
   if (!session.userId) {
     return { error: "Unauthorized" };
@@ -44,7 +44,7 @@ export async function renameFolder(folderId: number, name: string) {
     return { error: "Folder not found" };
   }
 
-  await MUTATIONS.renameFolderById(folderId, session.userId, name);
+  await MUTATIONS.renameFolderById(folderId, session.userId, newName);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));
@@ -52,7 +52,7 @@ export async function renameFolder(folderId: number, name: string) {
   return { success: true };
 }
 
-export async function deleteFolder(folderId: number) {
+export const deleteFolder = async (folderId: string) => {
   const session = await auth();
   if (!session.userId) {
     return { error: "Unauthorized" };
