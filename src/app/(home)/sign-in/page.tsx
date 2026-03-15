@@ -6,7 +6,6 @@ import { LogIn } from "lucide-react";
 
 export default async function SignInPage() {
   const session = await auth();
-
   if (session.userId) {
     return redirect("/drive");
   }

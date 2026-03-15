@@ -7,7 +7,6 @@ import { HardDrive } from "lucide-react";
 
 export default async function DrivePage() {
   const session = await auth();
-
   if (!session.userId) {
     return redirect("/sign-in");
   }

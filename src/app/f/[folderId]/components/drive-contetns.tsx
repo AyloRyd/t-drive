@@ -8,7 +8,7 @@ import Image from "next/image";
 import { ClerkLoaded, ClerkLoading, Show, UserButton } from "@clerk/nextjs";
 import { UploadButton } from "~/components/uploadthing";
 import { useRouter } from "next/navigation";
-import { FolderDialog } from "./folder-dialog";
+import { FolderDialog } from "./action-dialog";
 import { createFolder } from "~/server/actions/folder.actions";
 
 export default function DriveContents(props: {
@@ -91,10 +91,9 @@ export default function DriveContents(props: {
             />
           </ul>
         </div>
-        <div className="mt-8 flex w-full flex-col items-center justify-center gap-4">
+        <div className="mt-8 flex w-full flex-col items-center justify-center">
           <UploadButton
             endpoint="driveUploader"
-            className="mt-2"
             onClientUploadComplete={() => {
               navigate.refresh();
             }}

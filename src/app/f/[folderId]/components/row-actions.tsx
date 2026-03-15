@@ -10,7 +10,8 @@ import {
 import { deleteFile, renameFile } from "~/server/actions/file.actions";
 import { deleteFolder, renameFolder } from "~/server/actions/folder.actions";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
-import { FolderDialog } from "./folder-dialog";
+import { FolderDialog } from "./action-dialog";
+import { ConfirmDialog } from "./confirm-dialog";
 import { useState } from "react";
 
 const triggerClass =
@@ -62,21 +63,20 @@ export function FolderRowActions({ folder }: { folder: DBFolderType }) {
           }}
         />
 
-        <button
-          className={dangerItemClass}
-          onClick={async () => {
-            if (
-              confirm(
-                "Are you sure you want to delete this folder? All files and folders inside will be deleted.",
-              )
-            ) {
-              await deleteFolder(folder.id);
-            }
+        <ConfirmDialog
+          trigger={
+            <button className={dangerItemClass}>
+              <Trash2 size={15} />
+              Delete
+            </button>
+          }
+          title="Delete folder"
+          description="Are you sure you want to delete this folder? All files and folders inside will be deleted."
+          actionLabel="Delete"
+          onAction={async () => {
+            await deleteFolder(folder.id);
           }}
-        >
-          <Trash2 size={15} />
-          Delete
-        </button>
+        />
       </PopoverContent>
     </Popover>
   );
@@ -122,18 +122,20 @@ export function FileRowActions({ file }: { file: DBFileType }) {
           }}
         />
 
-        <button
-          className={dangerItemClass}
-          onClick={async (e) => {
-            e.preventDefault();
-            if (confirm("Are you sure you want to delete this file?")) {
-              await deleteFile(file.id);
-            }
+        <ConfirmDialog
+          trigger={
+            <button className={dangerItemClass}>
+              <Trash2 size={15} />
+              Delete
+            </button>
+          }
+          title="Delete file"
+          description="Are you sure you want to delete this file?"
+          actionLabel="Delete"
+          onAction={async () => {
+            await deleteFile(file.id);
           }}
-        >
-          <Trash2 size={15} />
-          Delete
-        </button>
+        />
       </PopoverContent>
     </Popover>
   );
