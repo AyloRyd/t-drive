@@ -75,6 +75,7 @@ export default function DriveContents(props: {
               <FileRow key={file.id} file={file} />
             ))}
             <FolderDialog
+              isFolder={true}
               key={"new-folder"}
               trigger={
                 <li className="flex cursor-pointer items-center justify-center gap-4 px-6 py-4 text-gray-400 transition-colors hover:bg-gray-700/50">

@@ -2,14 +2,10 @@
 
 A file storage app made with:
 
-- TypeScript
-- React
-- Next.js
-- Neon
-- Drizzle ORM
-- Clerk
-- Uploadthing
-- Tailwind CSS
-- Shadcn UI
+- Framework: Next.js, React, TypeScript
+- UI: Tailwind CSS, Shadcn UI
+- Database: Neon (Serverless Postgres), Drizzle ORM
+- Auth: Clerk
+- Storage: Uploadthing (Amazon S3 coming soon...)
 
 Deployed on Vercel: [check it out!](https://t-drive-cloud.vercel.app)

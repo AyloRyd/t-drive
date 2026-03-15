@@ -48,6 +48,7 @@ export function FolderRowActions({ folder }: { folder: DBFolderType }) {
         onClick={(e) => e.stopPropagation()}
       >
         <FolderDialog
+          isFolder={true}
           trigger={
             <button className={menuItemClass}>
               <Pencil size={15} />
@@ -107,6 +108,7 @@ export function FileRowActions({ file }: { file: DBFileType }) {
         onClick={(e) => e.stopPropagation()}
       >
         <FolderDialog
+          isFolder={false}
           trigger={
             <button className={menuItemClass}>
               <Pencil size={15} />

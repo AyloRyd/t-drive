@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -20,6 +20,7 @@ interface FolderDialogProps {
   description: string;
   submitLabel: string;
   defaultValue?: string;
+  isFolder?: boolean;
   onSubmit: (name: string) => Promise<void>;
 }
 
@@ -29,20 +30,35 @@ export function FolderDialog({
   description,
   submitLabel,
   defaultValue = "",
+  isFolder = false,
   onSubmit,
 }: FolderDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [folderName, setFolderName] = useState(defaultValue);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleOpenChange(open: boolean) {
     setIsOpen(open);
     if (open) setFolderName(defaultValue);
   }
 
+  const handleOpenAutoFocus = (e: Event) => {
+    e.preventDefault();
+    if (inputRef.current) {
+      inputRef.current.focus();
+      const dotIndex = isFolder ? -1 : defaultValue.indexOf(".");
+      const selectionEnd = dotIndex !== -1 ? dotIndex : defaultValue.length;
+      inputRef.current.setSelectionRange(0, selectionEnd);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="overflow-hidden rounded-xl border border-gray-700/50 bg-gray-900/95 p-0 text-gray-100 shadow-2xl backdrop-blur-md sm:max-w-sm">
+      <DialogContent 
+        onOpenAutoFocus={handleOpenAutoFocus}
+        className="overflow-hidden rounded-xl border border-gray-700/50 bg-gray-900/95 p-0 text-gray-100 shadow-2xl backdrop-blur-md sm:max-w-sm"
+      >
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -59,13 +75,13 @@ export function FolderDialog({
           </DialogHeader>
           <div className="px-6 pb-6">
             <Input
+              ref={inputRef}
               id="folder-name"
               value={folderName}
               required
               onChange={(e) => setFolderName(e.target.value)}
               placeholder="E.g., Vacation Photos"
               className="border-gray-700 bg-gray-800/50 text-white placeholder:text-gray-500 focus-visible:ring-gray-600"
-              autoFocus
             />
           </div>
           <DialogFooter className="flex-row justify-end gap-2 border-t border-gray-800 bg-gray-800 p-4 sm:justify-end">
