@@ -7,11 +7,36 @@ const rowClass =
   "cursor-pointer border-b border-gray-700/50 px-6 py-4 transition-colors last:border-b-0 hover:bg-gray-700/50";
 const gridClass = "grid grid-cols-12 items-center gap-4";
 const nameColClass =
-  "col-span-7 flex items-center overflow-hidden md:col-span-9";
+  "col-span-7 flex items-center overflow-hidden md:col-span-7";
+const createdAtColClass =
+  "max-md:hidden truncate text-gray-400 text-sm md:col-span-2";
 const sizeColClass = "col-span-3 truncate text-gray-400 md:col-span-2";
 const actionsColClass =
   "col-span-2 flex justify-end text-gray-400 md:col-span-1";
 const iconClass = "mr-3 shrink-0";
+
+function formatSize(sizeInBytes: number): string {
+  if (sizeInBytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let value = sizeInBytes;
+  let unitIndex = 0;
+  while (value >= 1000 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+  return `${value.toFixed(2)} ${units[unitIndex]}`;
+}
+
+function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return "—";
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${day}.${month}.${year}, ${hours}:${minutes}`;
+}
 
 export function FileRow(props: { file: DBFileType }) {
   const { file } = props;
@@ -23,9 +48,8 @@ export function FileRow(props: { file: DBFileType }) {
             <FileIcon className={`${iconClass} text-blue-400`} size={20} />
             <span className="truncate">{file.name}</span>
           </div>
-          <div className={sizeColClass}>
-            {`${(file.size / 1024 / 1024).toFixed(2)} MB`}
-          </div>
+          <div className={createdAtColClass}>{formatDate(file.created_at)}</div>
+          <div className={sizeColClass}>{formatSize(file.size)}</div>
           <div className={actionsColClass}>
             <FileRowActions file={file} />
           </div>
@@ -48,6 +72,9 @@ export function FolderRow(props: { folder: DBFolderType }) {
               size={20}
             />
             <span className="truncate">{folder.name}</span>
+          </div>
+          <div className={createdAtColClass}>
+            {formatDate(folder.created_at)}
           </div>
           <div className={sizeColClass}>{"—"}</div>
           <div className={actionsColClass}>

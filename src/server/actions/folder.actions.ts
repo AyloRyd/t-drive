@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "../db";
-import { folders_table } from "../db/schema";
+import { folders_table as foldersSchema } from "../db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { UTApi } from "uploadthing/server";
 import { cookies } from "next/headers";
@@ -24,7 +24,13 @@ export async function createFolder(name: string, parentId: string) {
   return { success: true };
 }
 
-export async function renameFolder({ folderId, newName }: { folderId: string; newName: string }) {
+export async function renameFolder({
+  folderId,
+  newName,
+}: {
+  folderId: string;
+  newName: string;
+}) {
   const session = await auth();
   if (!session.userId) {
     return { error: "Unauthorized" };
@@ -32,11 +38,11 @@ export async function renameFolder({ folderId, newName }: { folderId: string; ne
 
   const [folder] = await db
     .select()
-    .from(folders_table)
+    .from(foldersSchema)
     .where(
       and(
-        eq(folders_table.id, folderId),
-        eq(folders_table.ownerId, session.userId),
+        eq(foldersSchema.id, folderId),
+        eq(foldersSchema.ownerId, session.userId),
       ),
     );
 
@@ -60,11 +66,11 @@ export const deleteFolder = async (folderId: string) => {
 
   const [targetFolder] = await db
     .select()
-    .from(folders_table)
+    .from(foldersSchema)
     .where(
       and(
-        eq(folders_table.id, folderId),
-        eq(folders_table.ownerId, session.userId),
+        eq(foldersSchema.id, folderId),
+        eq(foldersSchema.ownerId, session.userId),
       ),
     );
 
@@ -90,4 +96,4 @@ export const deleteFolder = async (folderId: string) => {
   c.set("force-refresh", JSON.stringify(Math.random()));
 
   return { success: true };
-}
+};

@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "../db";
-import { files_table } from "../db/schema";
+import { files_table as filesSchema } from "../db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { UTApi } from "uploadthing/server";
 import { cookies } from "next/headers";
@@ -34,7 +34,13 @@ export async function createFile(input: {
   return { success: true };
 }
 
-export async function renameFile({ fileId, newName }: { fileId: string; newName: string }) {
+export async function renameFile({
+  fileId,
+  newName,
+}: {
+  fileId: string;
+  newName: string;
+}) {
   const session = await auth();
   if (!session.userId) {
     return { error: "Unauthorized" };
@@ -42,9 +48,9 @@ export async function renameFile({ fileId, newName }: { fileId: string; newName:
 
   const [file] = await db
     .select()
-    .from(files_table)
+    .from(filesSchema)
     .where(
-      and(eq(files_table.id, fileId), eq(files_table.ownerId, session.userId)),
+      and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, session.userId)),
     );
 
   if (!file) {
@@ -74,9 +80,9 @@ export const deleteFile = async (fileId: string) => {
 
   const [file] = await db
     .select()
-    .from(files_table)
+    .from(filesSchema)
     .where(
-      and(eq(files_table.id, fileId), eq(files_table.ownerId, session.userId)),
+      and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, session.userId)),
     );
 
   if (!file) {
@@ -94,4 +100,4 @@ export const deleteFile = async (fileId: string) => {
   c.set("force-refresh", JSON.stringify(Math.random()));
 
   return { success: true };
-}
+};

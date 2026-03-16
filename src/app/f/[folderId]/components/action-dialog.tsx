@@ -55,7 +55,7 @@ export function FolderDialog({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent 
+      <DialogContent
         onOpenAutoFocus={handleOpenAutoFocus}
         className="overflow-hidden rounded-xl border border-gray-700/50 bg-gray-900/95 p-0 text-gray-100 shadow-2xl backdrop-blur-md sm:max-w-sm"
       >

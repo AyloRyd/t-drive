@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
+import { QUERIES } from "~/server/db/queries";
 
 export default function HomePage() {
   return (
@@ -20,7 +21,12 @@ export default function HomePage() {
             return redirect("/sign-in");
           }
 
-          return redirect("/drive");
+          const rootFolder = await QUERIES.getRootFolderForUser(session.userId);
+          if (!rootFolder) {
+            return redirect("/drive");
+          }
+
+          return redirect(`/f/${rootFolder.id}`);
         }}
       >
         <Button

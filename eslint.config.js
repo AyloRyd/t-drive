@@ -23,13 +23,11 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      // 1. React & Next.js Native Rules (Replacing next/core-web-vitals)
       ...reactPlugin.configs["jsx-runtime"].rules,
       ...hooksPlugin.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs["core-web-vitals"].rules,
 
-      // 2. Your Custom TypeScript Rules
       "@typescript-eslint/array-type": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/consistent-type-imports": [
@@ -46,7 +44,6 @@ export default tseslint.config(
         { checksVoidReturn: { attributes: false } },
       ],
 
-      // 3. Your Custom Drizzle Rules
       "drizzle/enforce-delete-with-where": [
         "error",
         { drizzleObjectName: ["db", "ctx.db"] },
@@ -66,5 +63,5 @@ export default tseslint.config(
         projectService: true,
       },
     },
-  }
+  },
 );

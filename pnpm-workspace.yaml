@@ -1,4 +1,4 @@
 ignoredBuiltDependencies:
-  - '@clerk/shared'
+  - "@clerk/shared"
   - core-js
   - protobufjs

@@ -26,10 +26,7 @@ export const QUERIES = {
       .select()
       .from(filesSchema)
       .where(
-        and(
-          eq(filesSchema.parent, folderId),
-          eq(filesSchema.ownerId, userId),
-        ),
+        and(eq(filesSchema.parent, folderId), eq(filesSchema.ownerId, userId)),
       )
       .orderBy(filesSchema.name);
   },
@@ -50,7 +47,11 @@ export const QUERIES = {
       return { error: "Unexpected error occured" };
     }
 
-    return { folders, files, parents: parents as typeof foldersSchema.$inferSelect[] };
+    return {
+      folders,
+      files,
+      parents: parents as (typeof foldersSchema.$inferSelect)[],
+    };
   },
 
   getAllParentsForFolder: async function (folderId: string) {
