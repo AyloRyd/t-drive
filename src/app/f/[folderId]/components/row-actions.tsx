@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { Download, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Popover,
@@ -86,6 +86,20 @@ export function FolderRowActions({ folder }: { folder: DBFolderType }) {
 export function FileRowActions({ file }: { file: DBFileType }) {
   const [open, setOpen] = useState(false);
 
+  function handleFileDownload() {
+    return async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.preventDefault();
+      const res = await fetch(`/api/download?fileId=${file.id}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.name;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -123,6 +137,11 @@ export function FileRowActions({ file }: { file: DBFileType }) {
             await renameFile({ fileId: file.id, newName: name });
           }}
         />
+
+        <button onClick={handleFileDownload()} className={menuItemClass}>
+          <Download size={15} />
+          Download
+        </button>
 
         <ConfirmDialog
           trigger={

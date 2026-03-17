@@ -31,6 +31,15 @@ export const QUERIES = {
       .orderBy(filesSchema.name);
   },
 
+  getFileById: async function (fileId: string, userId: string) {
+    return (
+      await db
+        .select()
+        .from(filesSchema)
+        .where(and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, userId)))
+    )[0];
+  },
+
   getDriveData: async function (folderId: string, userId: string) {
     const folder = await QUERIES.getFolderById(folderId);
     if (folder?.ownerId !== userId) {
