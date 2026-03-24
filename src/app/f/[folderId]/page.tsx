@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { QUERIES } from "~/server/db/queries";
+import { queries } from "~/server/db/queries";
 import DriveContents from "./components/drive-contetns";
 
 export default async function FolderPage(props: {
@@ -13,7 +13,7 @@ export default async function FolderPage(props: {
 
   const params = await props.params;
 
-  const driveData = await QUERIES.getDriveData(params.folderId, session.userId);
+  const driveData = await queries.getDriveData(params.folderId, session.userId);
   if ("error" in driveData) {
     if (driveData.error === "Unauthorized") {
       notFound();
@@ -22,7 +22,7 @@ export default async function FolderPage(props: {
   }
   const { files, folders, parents } = driveData;
 
-  const rootFolder = await QUERIES.getRootFolderForUser(session.userId);
+  const rootFolder = await queries.getRootFolderForUser(session.userId);
   if (!rootFolder) {
     notFound();
   }

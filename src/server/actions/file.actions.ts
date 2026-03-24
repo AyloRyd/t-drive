@@ -1,12 +1,10 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
-import { db } from "../db";
-import { files_table as filesSchema } from "../db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { UTApi } from "uploadthing/server";
 import { cookies } from "next/headers";
-import { MUTATIONS } from "../db/mutations";
+import { mutations } from "../db/mutations";
+import { queries } from "../db/queries";
 
 const utApi = new UTApi();
 
@@ -23,7 +21,7 @@ export async function createFile(input: {
     return { error: "Unauthorized" };
   }
 
-  await MUTATIONS.createFile({
+  await mutations.createFile({
     file: input.file,
     userId: session.userId,
   });
@@ -46,13 +44,7 @@ export async function renameFile({
     return { error: "Unauthorized" };
   }
 
-  const [file] = await db
-    .select()
-    .from(filesSchema)
-    .where(
-      and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, session.userId)),
-    );
-
+  const file = await queries.getFileById(fileId, session.userId);
   if (!file) {
     return { error: "File not found" };
   }
@@ -60,11 +52,11 @@ export async function renameFile({
   const fileKey = file.url.replace("https://8wqc1o9kco.ufs.sh/f/", "");
   const utapiResult = await utApi.renameFiles({
     fileKey,
-    newName: newName,
+    newName,
   });
   console.log(utapiResult);
 
-  await MUTATIONS.renameFileById(fileId, session.userId, newName);
+  await mutations.renameFileById(fileId, session.userId, newName);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));
@@ -78,13 +70,7 @@ export const deleteFile = async (fileId: string) => {
     return { error: "Unauthorized" };
   }
 
-  const [file] = await db
-    .select()
-    .from(filesSchema)
-    .where(
-      and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, session.userId)),
-    );
-
+  const file = await queries.getFileById(fileId, session.userId);
   if (!file) {
     return { error: "File not found" };
   }
@@ -94,7 +80,7 @@ export const deleteFile = async (fileId: string) => {
   ]);
   console.log(utapiResult);
 
-  await MUTATIONS.deleteFileById(fileId, session.userId);
+  await mutations.deleteFileById(fileId, session.userId);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));

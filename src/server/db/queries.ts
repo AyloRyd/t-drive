@@ -1,55 +1,52 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import {
-  files_table as filesSchema,
-  folders_table as foldersSchema,
-} from "~/server/db/schema";
+import { filesTable, foldersTable } from "~/server/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-export const QUERIES = {
+export const queries = {
   getFolders: async function (folderId: string, userId: string) {
     return db
       .select()
-      .from(foldersSchema)
+      .from(foldersTable)
       .where(
         and(
-          eq(foldersSchema.parent, folderId),
-          eq(foldersSchema.ownerId, userId),
+          eq(foldersTable.parent, folderId),
+          eq(foldersTable.ownerId, userId),
         ),
       )
-      .orderBy(foldersSchema.name);
+      .orderBy(foldersTable.name);
   },
 
   getFiles: async function (folderId: string, userId: string) {
     return db
       .select()
-      .from(filesSchema)
+      .from(filesTable)
       .where(
-        and(eq(filesSchema.parent, folderId), eq(filesSchema.ownerId, userId)),
+        and(eq(filesTable.parent, folderId), eq(filesTable.ownerId, userId)),
       )
-      .orderBy(filesSchema.name);
+      .orderBy(filesTable.name);
   },
 
   getFileById: async function (fileId: string, userId: string) {
     return (
       await db
         .select()
-        .from(filesSchema)
-        .where(and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, userId)))
+        .from(filesTable)
+        .where(and(eq(filesTable.id, fileId), eq(filesTable.ownerId, userId)))
     )[0];
   },
 
   getDriveData: async function (folderId: string, userId: string) {
-    const folder = await QUERIES.getFolderById(folderId);
-    if (folder?.ownerId !== userId) {
+    const folder = await queries.getFolderById(folderId, userId);
+    if (!folder) {
       return { error: "Unauthorized" };
     }
 
     const [folders, files, parents] = await Promise.all([
-      QUERIES.getFolders(folderId, userId),
-      QUERIES.getFiles(folderId, userId),
-      QUERIES.getAllParentsForFolder(folderId),
+      queries.getFolders(folderId, userId),
+      queries.getFiles(folderId, userId),
+      queries.getAllParentsForFolder(folderId),
     ]);
 
     if ("error" in parents) {
@@ -59,7 +56,7 @@ export const QUERIES = {
     return {
       folders,
       files,
-      parents: parents as (typeof foldersSchema.$inferSelect)[],
+      parents: parents as (typeof foldersTable.$inferSelect)[],
     };
   },
 
@@ -69,8 +66,8 @@ export const QUERIES = {
     while (currentId !== null) {
       const folder = await db
         .selectDistinct()
-        .from(foldersSchema)
-        .where(eq(foldersSchema.id, currentId));
+        .from(foldersTable)
+        .where(eq(foldersTable.id, currentId));
 
       if (!folder[0]) {
         return { error: "Parent folder not found" };
@@ -81,22 +78,25 @@ export const QUERIES = {
     return parents.slice(1);
   },
 
-  getFolderById: async function (folderId: string) {
+  getFolderById: async function (folderId: string, userId: string) {
     return (
       await db
         .select()
-        .from(foldersSchema)
-        .where(eq(foldersSchema.id, folderId))
+        .from(foldersTable)
+        .where(
+          and(eq(foldersTable.id, folderId), eq(foldersTable.ownerId, userId)),
+        )
     )[0];
   },
 
   getRootFolderForUser: async function (userId: string) {
-    const folder = await db
-      .select()
-      .from(foldersSchema)
-      .where(
-        and(eq(foldersSchema.ownerId, userId), isNull(foldersSchema.parent)),
-      );
-    return folder[0];
+    return (
+      await db
+        .select()
+        .from(foldersTable)
+        .where(
+          and(eq(foldersTable.ownerId, userId), isNull(foldersTable.parent)),
+        )
+    )[0];
   },
 };

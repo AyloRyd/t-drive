@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
-import { QUERIES } from "~/server/db/queries";
+import { queries } from "~/server/db/queries";
 import { onboardUser } from "~/server/actions/onboard.actions";
 import { HardDrive } from "lucide-react";
 
@@ -11,7 +11,7 @@ export default async function DrivePage() {
     return redirect("/sign-in");
   }
 
-  const rootFolder = await QUERIES.getRootFolderForUser(session.userId);
+  const rootFolder = await queries.getRootFolderForUser(session.userId);
 
   if (!rootFolder) {
     return (

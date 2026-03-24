@@ -2,8 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import z from "zod";
-import { QUERIES } from "~/server/db/queries";
-import { MUTATIONS } from "~/server/db/mutations";
+import { queries } from "~/server/db/queries";
+import { mutations } from "~/server/db/mutations";
 
 const file = createUploadthing();
 
@@ -25,7 +25,7 @@ export const ourFileRouter = {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       if (!user.userId) throw new UploadThingError("Unauthorized");
 
-      const folder = await QUERIES.getFolderById(input.folderId);
+      const folder = await queries.getFolderById(input.folderId, user.userId);
 
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       if (!folder) throw new UploadThingError("Folder not found");
@@ -40,7 +40,7 @@ export const ourFileRouter = {
       console.log("Upload complete for userId:", metadata.userId);
       console.log("file url", file.ufsUrl);
 
-      await MUTATIONS.createFile({
+      await mutations.createFile({
         file: {
           name: file.name,
           size: file.size,

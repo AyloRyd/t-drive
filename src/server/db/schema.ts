@@ -7,7 +7,7 @@ import {
   integer,
 } from "drizzle-orm/pg-core";
 
-export const files_table = pgTable(
+export const filesTable = pgTable(
   "files_table",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -26,9 +26,9 @@ export const files_table = pgTable(
   },
 );
 
-export type DBFileType = typeof files_table.$inferSelect;
+export type DBFileType = typeof filesTable.$inferSelect;
 
-export const folders_table = pgTable(
+export const foldersTable = pgTable(
   "folders_table",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -45,4 +45,4 @@ export const folders_table = pgTable(
   },
 );
 
-export type DBFolderType = typeof folders_table.$inferSelect;
+export type DBFolderType = typeof foldersTable.$inferSelect;

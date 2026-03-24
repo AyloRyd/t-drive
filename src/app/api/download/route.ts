@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
-import { QUERIES } from "~/server/db/queries";
+import { queries } from "~/server/db/queries";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse("Missing fileId", { status: 400 });
   }
 
-  const file = await QUERIES.getFileById(fileId, session.userId);
+  const file = await queries.getFileById(fileId, session.userId);
   if (!file) {
     return new NextResponse("File not found", { status: 404 });
   }

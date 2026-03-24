@@ -1,13 +1,10 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import {
-  files_table as filesSchema,
-  folders_table as foldersSchema,
-} from "~/server/db/schema";
+import { filesTable, foldersTable } from "~/server/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
 
-export const MUTATIONS = {
+export const mutations = {
   createFile: async function (input: {
     file: {
       name: string;
@@ -17,7 +14,7 @@ export const MUTATIONS = {
     };
     userId: string;
   }) {
-    return await db.insert(filesSchema).values({
+    return await db.insert(filesTable).values({
       ...input.file,
       ownerId: input.userId,
     });
@@ -29,15 +26,15 @@ export const MUTATIONS = {
     newName: string,
   ) {
     return await db
-      .update(filesSchema)
+      .update(filesTable)
       .set({ name: newName })
-      .where(and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, userId)));
+      .where(and(eq(filesTable.id, fileId), eq(filesTable.ownerId, userId)));
   },
 
   deleteFileById: async function (fileId: string, userId: string) {
     return await db
-      .delete(filesSchema)
-      .where(and(eq(filesSchema.id, fileId), eq(filesSchema.ownerId, userId)));
+      .delete(filesTable)
+      .where(and(eq(filesTable.id, fileId), eq(filesTable.ownerId, userId)));
   },
 
   createFolderForUser: async function (
@@ -45,7 +42,7 @@ export const MUTATIONS = {
     parentId: string,
     userId: string,
   ) {
-    return await db.insert(foldersSchema).values({
+    return await db.insert(foldersTable).values({
       name,
       parent: parentId,
       ownerId: userId,
@@ -58,18 +55,18 @@ export const MUTATIONS = {
     newName: string,
   ) {
     return await db
-      .update(foldersSchema)
+      .update(foldersTable)
       .set({ name: newName })
       .where(
-        and(eq(foldersSchema.id, folderId), eq(foldersSchema.ownerId, userId)),
+        and(eq(foldersTable.id, folderId), eq(foldersTable.ownerId, userId)),
       );
   },
 
   deleteFolderAndChildren: async function (folderId: string, userId: string) {
     const allFolders = await db
       .select()
-      .from(foldersSchema)
-      .where(eq(foldersSchema.ownerId, userId));
+      .from(foldersTable)
+      .where(eq(foldersTable.ownerId, userId));
 
     const foldersToDelete = new Set<string>([folderId]);
     let added = true;
@@ -91,31 +88,31 @@ export const MUTATIONS = {
 
     const filesToDelete = await db
       .select()
-      .from(filesSchema)
+      .from(filesTable)
       .where(
         and(
-          inArray(filesSchema.parent, foldersToDeleteArray),
-          eq(filesSchema.ownerId, userId),
+          inArray(filesTable.parent, foldersToDeleteArray),
+          eq(filesTable.ownerId, userId),
         ),
       );
 
     if (filesToDelete.length > 0) {
       await db
-        .delete(filesSchema)
+        .delete(filesTable)
         .where(
           and(
-            inArray(filesSchema.parent, foldersToDeleteArray),
-            eq(filesSchema.ownerId, userId),
+            inArray(filesTable.parent, foldersToDeleteArray),
+            eq(filesTable.ownerId, userId),
           ),
         );
     }
 
     await db
-      .delete(foldersSchema)
+      .delete(foldersTable)
       .where(
         and(
-          inArray(foldersSchema.id, foldersToDeleteArray),
-          eq(foldersSchema.ownerId, userId),
+          inArray(foldersTable.id, foldersToDeleteArray),
+          eq(foldersTable.ownerId, userId),
         ),
       );
 
@@ -123,18 +120,18 @@ export const MUTATIONS = {
   },
 
   onboardUser: async function (userId: string) {
-    const rootFolder = await db
-      .insert(foldersSchema)
-      .values({
-        name: "Root",
-        parent: null,
-        ownerId: userId,
-      })
-      .returning();
+    const rootFolderId = (
+      await db
+        .insert(foldersTable)
+        .values({
+          name: "Root",
+          parent: null,
+          ownerId: userId,
+        })
+        .returning()
+    )[0]!.id;
 
-    const rootFolderId = rootFolder[0]!.id;
-
-    await db.insert(foldersSchema).values([
+    await db.insert(foldersTable).values([
       {
         name: "Trash",
         parent: rootFolderId,

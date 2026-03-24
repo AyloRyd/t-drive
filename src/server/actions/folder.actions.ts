@@ -1,12 +1,10 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
-import { db } from "../db";
-import { folders_table as foldersSchema } from "../db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { UTApi } from "uploadthing/server";
 import { cookies } from "next/headers";
-import { MUTATIONS } from "../db/mutations";
+import { mutations } from "../db/mutations";
+import { queries } from "../db/queries";
 
 const utApi = new UTApi();
 
@@ -16,7 +14,7 @@ export async function createFolder(name: string, parentId: string) {
     return { error: "Unauthorized" };
   }
 
-  await MUTATIONS.createFolderForUser(name, parentId, session.userId);
+  await mutations.createFolderForUser(name, parentId, session.userId);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));
@@ -36,21 +34,12 @@ export async function renameFolder({
     return { error: "Unauthorized" };
   }
 
-  const [folder] = await db
-    .select()
-    .from(foldersSchema)
-    .where(
-      and(
-        eq(foldersSchema.id, folderId),
-        eq(foldersSchema.ownerId, session.userId),
-      ),
-    );
-
+  const folder = await queries.getFolderById(folderId, session.userId);
   if (!folder) {
     return { error: "Folder not found" };
   }
 
-  await MUTATIONS.renameFolderById(folderId, session.userId, newName);
+  await mutations.renameFolderById(folderId, session.userId, newName);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));
@@ -64,21 +53,12 @@ export const deleteFolder = async (folderId: string) => {
     return { error: "Unauthorized" };
   }
 
-  const [targetFolder] = await db
-    .select()
-    .from(foldersSchema)
-    .where(
-      and(
-        eq(foldersSchema.id, folderId),
-        eq(foldersSchema.ownerId, session.userId),
-      ),
-    );
-
+  const targetFolder = await queries.getFolderById(folderId, session.userId);
   if (!targetFolder) {
     return { error: "Folder not found" };
   }
 
-  const { filesToDelete } = await MUTATIONS.deleteFolderAndChildren(
+  const { filesToDelete } = await mutations.deleteFolderAndChildren(
     folderId,
     session.userId,
   );

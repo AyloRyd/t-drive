@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { MUTATIONS } from "../db/mutations";
+import { mutations } from "../db/mutations";
 import { cookies } from "next/headers";
 
 export async function onboardUser() {
@@ -10,7 +10,7 @@ export async function onboardUser() {
     return { error: "Unauthorized" };
   }
 
-  const rootFolderId = await MUTATIONS.onboardUser(session.userId);
+  const rootFolderId = await mutations.onboardUser(session.userId);
 
   const c = await cookies();
   c.set("force-refresh", JSON.stringify(Math.random()));
