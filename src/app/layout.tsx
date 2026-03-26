@@ -3,6 +3,7 @@ import "@uploadthing/react/styles.css";
 
 import { type Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { QueryProvider } from "~/components/query-provider";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { cn } from "~/lib/utils";
 
@@ -40,7 +41,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClerkProvider>{children}</ClerkProvider>
+        <ClerkProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </ClerkProvider>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -63,3 +63,17 @@ export const deleteFile = async (fileId: string) => {
 
   return { success: true };
 };
+
+export async function getFilePropertiesAction(fileId: string) {
+  const session = await auth();
+  if (!session.userId) {
+    return { error: "Unauthorized" };
+  }
+
+  const data = await queries.getFileDetails(fileId, session.userId);
+  if (!data) {
+    return { error: "File not found" };
+  }
+
+  return { success: true, data };
+}

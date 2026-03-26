@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { Download, MoreVertical, Pencil, Trash2, Info } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Popover,
@@ -12,6 +12,7 @@ import { deleteFolder, renameFolder } from "~/server/actions/folder.actions";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { FolderDialog } from "./action-dialog";
 import { ConfirmDialog } from "./confirm-dialog";
+import { PropertiesDialog } from "./properties-dialog";
 import { useState } from "react";
 
 const triggerClass =
@@ -62,6 +63,17 @@ export function FolderRowActions({ folder }: { folder: DBFolderType }) {
           onSubmit={async (name) => {
             await renameFolder({ folderId: folder.id, newName: name });
           }}
+        />
+
+        <PropertiesDialog
+          id={folder.id}
+          isFolder={true}
+          trigger={
+            <button className={menuItemClass}>
+              <Info size={15} />
+              Properties
+            </button>
+          }
         />
 
         <ConfirmDialog
@@ -136,6 +148,17 @@ export function FileRowActions({ file }: { file: DBFileType }) {
           onSubmit={async (name) => {
             await renameFile({ fileId: file.id, newName: name });
           }}
+        />
+
+        <PropertiesDialog
+          id={file.id}
+          isFolder={false}
+          trigger={
+            <button className={menuItemClass}>
+              <Info size={15} />
+              Properties
+            </button>
+          }
         />
 
         <button onClick={handleFileDownload()} className={menuItemClass}>

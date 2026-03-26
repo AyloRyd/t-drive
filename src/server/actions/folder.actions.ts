@@ -77,3 +77,17 @@ export const deleteFolder = async (folderId: string) => {
 
   return { success: true };
 };
+
+export async function getFolderPropertiesAction(folderId: string) {
+  const session = await auth();
+  if (!session.userId) {
+    return { error: "Unauthorized" };
+  }
+
+  const data = await queries.getFolderDetails(folderId, session.userId);
+  if (!data) {
+    return { error: "Folder not found" };
+  }
+
+  return { success: true, data };
+}

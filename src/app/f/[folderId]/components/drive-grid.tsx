@@ -1,7 +1,7 @@
 import { Folder as FolderIcon, FileIcon, Plus } from "lucide-react";
 import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
-import { FileRowActions, FolderRowActions } from "./row-actions";
+import { FileRowActions, FolderRowActions } from "./item-actions";
 import { createFolder } from "~/server/actions/folder.actions";
 import { FolderDialog } from "./action-dialog";
 
