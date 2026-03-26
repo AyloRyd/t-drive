@@ -8,30 +8,6 @@ import { queries } from "../db/queries";
 
 const utApi = new UTApi();
 
-export async function createFile(input: {
-  file: {
-    name: string;
-    size: number;
-    url: string;
-    parent: string;
-  };
-}) {
-  const session = await auth();
-  if (!session.userId) {
-    return { error: "Unauthorized" };
-  }
-
-  await mutations.createFile({
-    file: input.file,
-    userId: session.userId,
-  });
-
-  const c = await cookies();
-  c.set("force-refresh", JSON.stringify(Math.random()));
-
-  return { success: true };
-}
-
 export async function renameFile({
   fileId,
   newName,

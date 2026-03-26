@@ -1,7 +1,41 @@
-import { Folder as FolderIcon, FileIcon } from "lucide-react";
+import { Folder as FolderIcon, FileIcon, Plus } from "lucide-react";
 import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { FileRowActions, FolderRowActions } from "./row-actions";
+import { createFolder } from "~/server/actions/folder.actions";
+import { FolderDialog } from "./action-dialog";
+
+export default function DriveContentsList(props: {
+  files: DBFileType[];
+  folders: DBFolderType[];
+  currentFolderId: string;
+}) {
+  return (
+    <ul>
+      {props.folders.map((folder) => (
+        <FolderRow key={folder.id} folder={folder} />
+      ))}
+      {props.files.map((file) => (
+        <FileRow key={file.id} file={file} />
+      ))}
+      <FolderDialog
+        isFolder={true}
+        trigger={
+          <li className="flex cursor-pointer items-center justify-center gap-4 px-6 py-4 text-gray-400 transition-colors hover:bg-gray-700/50">
+            <Plus size={20} />
+            New folder
+          </li>
+        }
+        title="New folder"
+        description="Enter a name for your new folder."
+        submitLabel="Create"
+        onSubmit={async (name) => {
+          await createFolder(name, props.currentFolderId);
+        }}
+      />
+    </ul>
+  );
+}
 
 const rowClass =
   "cursor-pointer border-b border-gray-700/50 px-6 py-4 transition-colors last:border-b-0 hover:bg-gray-700/50";
@@ -38,7 +72,7 @@ function formatDate(date: Date | string | null | undefined): string {
   return `${day}.${month}.${year}, ${hours}:${minutes}`;
 }
 
-export function FileRow(props: { file: DBFileType }) {
+function FileRow(props: { file: DBFileType }) {
   const { file } = props;
   return (
     <li className={rowClass}>
@@ -59,7 +93,7 @@ export function FileRow(props: { file: DBFileType }) {
   );
 }
 
-export function FolderRow(props: { folder: DBFolderType }) {
+function FolderRow(props: { folder: DBFolderType }) {
   const { folder } = props;
   return (
     <li className={rowClass}>
