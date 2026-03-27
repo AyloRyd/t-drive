@@ -1,53 +1,89 @@
-import { Folder as FolderIcon, FileIcon, Plus } from "lucide-react";
+import { Folder as FolderIcon, FileIcon } from "lucide-react";
 import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
-import { createFolder } from "~/server/actions/folder.actions";
-import { ActionDialog } from "./action-dialog";
 import { formatDate, formatSize } from "~/lib/utils";
+import { Checkbox } from "~/components/ui/checkbox";
+import type { SelectedDriveItem } from "~/lib/types";
 
 export default function DriveContentsList(props: {
   files: DBFileType[];
   folders: DBFolderType[];
   currentFolderId: string;
+  selectedItems: SelectedDriveItem[];
+  onToggleSelect: (item: SelectedDriveItem) => void;
 }) {
   return (
-    <ul>
-      {props.folders.map((folder) => (
-        <DriveItemRow key={folder.id} item={folder} isFolder={true} />
-      ))}
-      {props.files.map((file) => (
-        <DriveItemRow key={file.id} item={file} isFolder={false} />
-      ))}
-      <ActionDialog
-        isFolder={true}
-        trigger={
-          <li className="flex cursor-pointer items-center justify-center gap-4 px-6 py-4 text-gray-400 transition-colors hover:bg-gray-700/50">
-            <Plus size={20} />
-            New folder
-          </li>
-        }
-        title="New folder"
-        description="Enter a name for your new folder."
-        submitLabel="Create"
-        onSubmit={async (name) => {
-          await createFolder(name, props.currentFolderId);
-        }}
-      />
-    </ul>
+    <div className="overflow-hidden rounded-xl bg-gray-800/50 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
+      <div className="border-t-0 border-r-0 border-b border-l-0 border-gray-700/50 bg-gray-800/30 px-6 py-4">
+        <div className="grid grid-cols-12 items-center gap-4 text-xs font-medium text-gray-400 md:text-sm">
+          <div className="col-span-12 flex items-center gap-4 md:col-span-7">
+            <div className="w-4 shrink-0" />
+            <span>Name</span>
+          </div>
+          <div className="max-md:hidden md:col-span-2">Created at</div>
+          <div className="col-span-3 md:col-span-2">Size</div>
+          <div className="col-span-2 flex justify-end md:col-span-1">
+            Actions
+          </div>
+        </div>
+      </div>
+      <ul>
+        {props.folders.map((folder) => (
+          <DriveItemRow
+            key={folder.id}
+            item={folder}
+            isFolder={true}
+            isSelected={props.selectedItems.some(
+              (i) => i.id === folder.id && i.type === "folder",
+            )}
+            onToggleSelect={() =>
+              props.onToggleSelect({ id: folder.id, type: "folder" })
+            }
+          />
+        ))}
+        {props.files.map((file) => (
+          <DriveItemRow
+            key={file.id}
+            item={file}
+            isFolder={false}
+            isSelected={props.selectedItems.some(
+              (i) => i.id === file.id && i.type === "file",
+            )}
+            onToggleSelect={() =>
+              props.onToggleSelect({ id: file.id, type: "file" })
+            }
+          />
+        ))}
+      </ul>
+    </div>
   );
 }
 
 function DriveItemRow({
   item,
   isFolder,
+  isSelected,
+  onToggleSelect,
 }: {
   item: DBFileType | DBFolderType;
   isFolder: boolean;
+  isSelected: boolean;
+  onToggleSelect: () => void;
 }) {
   const content = (
     <div className="grid grid-cols-12 items-center gap-4">
       <div className="col-span-7 flex items-center overflow-hidden md:col-span-7">
+        <div
+          className="mr-3 flex shrink-0 items-center justify-center pr-2"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            onToggleSelect();
+          }}
+        >
+          <Checkbox checked={isSelected} />
+        </div>
         {isFolder ? (
           <FolderIcon
             className="mr-3 shrink-0 text-yellow-500"
@@ -71,8 +107,7 @@ function DriveItemRow({
     </div>
   );
 
-  const liClassName =
-    "cursor-pointer border-b border-gray-700/50 px-6 py-4 transition-colors last:border-b-0 hover:bg-gray-700/50";
+  const liClassName = `cursor-pointer border-b border-gray-700/50 px-6 py-4 transition-colors last:border-b-0 hover:bg-gray-700/50 ${isSelected ? "bg-gray-800/80" : ""}`;
 
   return (
     <li className={liClassName}>

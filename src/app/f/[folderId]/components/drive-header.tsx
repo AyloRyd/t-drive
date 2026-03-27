@@ -11,7 +11,7 @@ export default function DriveHeader(props: {
   rootFolderId: string;
 }) {
   return (
-    <div className="mb-6 flex items-center justify-between rounded-xl bg-gray-800/50 p-4 px-6 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
+    <div className="flex items-center justify-between rounded-xl bg-gray-800/50 p-4 px-6 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
       <div className="flex items-center">
         <Link
           href={`/f/${props.rootFolderId}`}

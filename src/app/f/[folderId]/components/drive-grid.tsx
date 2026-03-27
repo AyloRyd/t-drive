@@ -1,43 +1,45 @@
-import { Folder as FolderIcon, FileIcon, Plus } from "lucide-react";
+import { Folder as FolderIcon, FileIcon } from "lucide-react";
 import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
-import { createFolder } from "~/server/actions/folder.actions";
-import { ActionDialog } from "./action-dialog";
+import { Checkbox } from "~/components/ui/checkbox";
+import type { SelectedDriveItem } from "~/lib/types";
 
 export default function DriveContentsGrid(props: {
   files: DBFileType[];
   folders: DBFolderType[];
   currentFolderId: string;
+  selectedItems: SelectedDriveItem[];
+  onToggleSelect: (item: SelectedDriveItem) => void;
 }) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {props.folders.map((folder) => (
-        <DriveItemCard key={folder.id} item={folder} isFolder={true} />
+        <DriveItemCard
+          key={folder.id}
+          item={folder}
+          isFolder={true}
+          isSelected={props.selectedItems.some(
+            (i) => i.id === folder.id && i.type === "folder",
+          )}
+          onToggleSelect={() =>
+            props.onToggleSelect({ id: folder.id, type: "folder" })
+          }
+        />
       ))}
       {props.files.map((file) => (
-        <DriveItemCard key={file.id} item={file} isFolder={false} />
+        <DriveItemCard
+          key={file.id}
+          item={file}
+          isFolder={false}
+          isSelected={props.selectedItems.some(
+            (i) => i.id === file.id && i.type === "file",
+          )}
+          onToggleSelect={() =>
+            props.onToggleSelect({ id: file.id, type: "file" })
+          }
+        />
       ))}
-      <ActionDialog
-        isFolder={true}
-        trigger={
-          <div className="group relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border border-gray-700/50 bg-gray-800/30 p-6 text-center tracking-wide text-gray-400 transition-colors hover:bg-gray-700/50">
-            <Plus
-              size={48}
-              className="text-gray-500 transition-colors group-hover:text-gray-300"
-            />
-            <span className="w-full truncate text-sm font-medium">
-              New folder
-            </span>
-          </div>
-        }
-        title="New folder"
-        description="Enter a name for your new folder."
-        submitLabel="Create"
-        onSubmit={async (name) => {
-          await createFolder(name, props.currentFolderId);
-        }}
-      />
     </div>
   );
 }
@@ -45,9 +47,13 @@ export default function DriveContentsGrid(props: {
 function DriveItemCard({
   item,
   isFolder,
+  isSelected,
+  onToggleSelect,
 }: {
   item: DBFileType | DBFolderType;
   isFolder: boolean;
+  isSelected: boolean;
+  onToggleSelect: () => void;
 }) {
   const content = (
     <>
@@ -68,7 +74,19 @@ function DriveItemCard({
   const wrapperClass = "flex w-full flex-col items-center gap-3";
 
   return (
-    <div className="group relative flex flex-col items-center justify-center gap-4 rounded-xl border border-gray-700/50 bg-gray-800/30 p-6 text-center transition-colors hover:bg-gray-700/50">
+    <div
+      className={`group relative flex flex-col items-center justify-center gap-4 rounded-xl border border-gray-700/50 p-6 text-center transition-colors hover:bg-gray-700/50 ${isSelected ? "bg-gray-800/80" : "bg-gray-800/30"}`}
+    >
+      <div
+        className={`absolute top-2 left-2 flex p-1 transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onToggleSelect();
+        }}
+      >
+        <Checkbox checked={isSelected} />
+      </div>
       <div className="absolute top-2 right-2">
         <ItemActions item={item} isFolder={isFolder} />
       </div>
