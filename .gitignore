@@ -32,3 +32,6 @@ yarn-error.log*
 
 .idea
 /.clerk/
+
+.agents
+skills-lock.json

@@ -149,8 +149,4 @@ export const queries = {
       totalItems,
     };
   },
-
-  getFileDetails: async function (fileId: string, userId: string) {
-    return await queries.getFileById(fileId, userId);
-  },
 };

@@ -24,7 +24,7 @@ interface FolderDialogProps {
   onSubmit: (name: string) => Promise<void>;
 }
 
-export function FolderDialog({
+export function ActionDialog({
   trigger,
   title,
   description,

@@ -70,7 +70,7 @@ export async function getFilePropertiesAction(fileId: string) {
     return { error: "Unauthorized" };
   }
 
-  const data = await queries.getFileDetails(fileId, session.userId);
+  const data = await queries.getFileById(fileId, session.userId);
   if (!data) {
     return { error: "File not found" };
   }
