@@ -3,15 +3,15 @@ import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
 import { Checkbox } from "~/components/ui/checkbox";
-import type { SelectedDriveItem } from "~/lib/types";
+import { useSelectedItems } from "~/hooks/use-selected-items";
 
 export default function DriveContentsGrid(props: {
   files: DBFileType[];
   folders: DBFolderType[];
   currentFolderId: string;
-  selectedItems: SelectedDriveItem[];
-  onToggleSelect: (item: SelectedDriveItem) => void;
 }) {
+  const { selectedItems, toggleSelect } = useSelectedItems();
+
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {props.folders.map((folder) => (
@@ -19,12 +19,10 @@ export default function DriveContentsGrid(props: {
           key={folder.id}
           item={folder}
           isFolder={true}
-          isSelected={props.selectedItems.some(
+          isSelected={selectedItems.some(
             (i) => i.id === folder.id && i.type === "folder",
           )}
-          onToggleSelect={() =>
-            props.onToggleSelect({ id: folder.id, type: "folder" })
-          }
+          onToggleSelect={() => toggleSelect({ id: folder.id, type: "folder" })}
         />
       ))}
       {props.files.map((file) => (
@@ -32,12 +30,10 @@ export default function DriveContentsGrid(props: {
           key={file.id}
           item={file}
           isFolder={false}
-          isSelected={props.selectedItems.some(
+          isSelected={selectedItems.some(
             (i) => i.id === file.id && i.type === "file",
           )}
-          onToggleSelect={() =>
-            props.onToggleSelect({ id: file.id, type: "file" })
-          }
+          onToggleSelect={() => toggleSelect({ id: file.id, type: "file" })}
         />
       ))}
     </div>

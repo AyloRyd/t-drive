@@ -7,28 +7,22 @@ import { deleteMultipleItems } from "~/server/actions/bulk.actions";
 import { TabsList, TabsTrigger } from "~/components/ui/tabs";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { NewItemButton } from "./new-item-button";
-import type { SelectedDriveItem } from "~/lib/types";
+import { useSelectedItems } from "~/hooks/use-selected-items";
 
 interface DriveActionBarProps {
-  filesLength: number;
-  foldersLength: number;
   currentFolderId: string;
-  selectedItems: SelectedDriveItem[];
-  setSelectedItems: React.Dispatch<React.SetStateAction<SelectedDriveItem[]>>;
   folders: DBFolderType[];
   files: DBFileType[];
 }
 
 export function DriveActionBar({
-  filesLength,
-  foldersLength,
   currentFolderId,
-  selectedItems,
-  setSelectedItems,
   folders,
   files,
 }: DriveActionBarProps) {
-  const totalItems = filesLength + foldersLength;
+  const { selectedItems, selectAll, clearSelection } = useSelectedItems();
+
+  const totalItems = files.length + folders.length;
   const allSelected = totalItems > 0 && selectedItems.length === totalItems;
   const someSelected = selectedItems.length > 0;
 
@@ -39,9 +33,9 @@ export function DriveActionBar({
         type: "folder" as const,
       }));
       const allFiles = files.map((f) => ({ id: f.id, type: "file" as const }));
-      setSelectedItems([...allFolders, ...allFiles]);
+      selectAll([...allFolders, ...allFiles]);
     } else {
-      setSelectedItems([]);
+      clearSelection();
     }
   };
 
@@ -51,9 +45,7 @@ export function DriveActionBar({
         <Checkbox checked={allSelected} onCheckedChange={handleSelectAll} />
         <NewItemButton currentFolderId={currentFolderId} />
       </div>
-
       <div className="flex-1" />
-
       <div className="flex items-center gap-4">
         {someSelected ? (
           <ConfirmDialog
@@ -67,7 +59,7 @@ export function DriveActionBar({
             actionLabel="Delete"
             onAction={async () => {
               await deleteMultipleItems(selectedItems);
-              setSelectedItems([]);
+              clearSelection();
             }}
           />
         ) : (

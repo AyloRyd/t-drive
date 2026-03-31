@@ -4,15 +4,15 @@ import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
 import { formatDate, formatSize } from "~/lib/utils";
 import { Checkbox } from "~/components/ui/checkbox";
-import type { SelectedDriveItem } from "~/lib/types";
+import { useSelectedItems } from "~/hooks/use-selected-items";
 
 export default function DriveContentsList(props: {
   files: DBFileType[];
   folders: DBFolderType[];
   currentFolderId: string;
-  selectedItems: SelectedDriveItem[];
-  onToggleSelect: (item: SelectedDriveItem) => void;
 }) {
+  const { selectedItems, toggleSelect } = useSelectedItems();
+
   return (
     <div className="overflow-hidden rounded-xl bg-gray-800/50 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
       <div className="border-t-0 border-r-0 border-b border-l-0 border-gray-700/50 bg-gray-800/30 px-6 py-4">
@@ -34,11 +34,11 @@ export default function DriveContentsList(props: {
             key={folder.id}
             item={folder}
             isFolder={true}
-            isSelected={props.selectedItems.some(
+            isSelected={selectedItems.some(
               (i) => i.id === folder.id && i.type === "folder",
             )}
             onToggleSelect={() =>
-              props.onToggleSelect({ id: folder.id, type: "folder" })
+              toggleSelect({ id: folder.id, type: "folder" })
             }
           />
         ))}
@@ -47,12 +47,10 @@ export default function DriveContentsList(props: {
             key={file.id}
             item={file}
             isFolder={false}
-            isSelected={props.selectedItems.some(
+            isSelected={selectedItems.some(
               (i) => i.id === file.id && i.type === "file",
             )}
-            onToggleSelect={() =>
-              props.onToggleSelect({ id: file.id, type: "file" })
-            }
+            onToggleSelect={() => toggleSelect({ id: file.id, type: "file" })}
           />
         ))}
       </ul>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import DriveContentsList from "./drive-list";
 import { Tabs, TabsContent } from "~/components/ui/tabs";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
@@ -8,7 +7,8 @@ import { useViewPreference } from "~/hooks/use-view-preference";
 import DriveContentsGrid from "./drive-grid";
 import DriveHeader from "./drive-header";
 import { DriveActionBar } from "./drive-action-bar";
-import type { SelectedDriveItem } from "~/lib/types";
+import { useEffect } from "react";
+import { useSelectedItems } from "~/hooks/use-selected-items";
 
 export default function DriveContents(props: {
   files: DBFileType[];
@@ -18,20 +18,11 @@ export default function DriveContents(props: {
   rootFolderId: string;
 }) {
   const [view, setView] = useViewPreference();
-  const [selectedItems, setSelectedItems] = useState<SelectedDriveItem[]>([]);
+  const clearSelection = useSelectedItems((state) => state.clearSelection);
 
-  const handleToggleSelect = ({ id, type }: SelectedDriveItem) => {
-    setSelectedItems((prev) => {
-      const isSelected = prev.some(
-        (item) => item.id === id && item.type === type,
-      );
-      if (isSelected) {
-        return prev.filter((item) => !(item.id === id && item.type === type));
-      } else {
-        return [...prev, { id, type }];
-      }
-    });
-  };
+  useEffect(() => {
+    clearSelection();
+  }, [clearSelection, props.currentFolderId]);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-gray-800 p-4 font-sans text-gray-100 md:p-8">
@@ -47,11 +38,7 @@ export default function DriveContents(props: {
               rootFolderId={props.rootFolderId}
             />
             <DriveActionBar
-              filesLength={props.files.length}
-              foldersLength={props.folders.length}
               currentFolderId={props.currentFolderId}
-              selectedItems={selectedItems}
-              setSelectedItems={setSelectedItems}
               folders={props.folders}
               files={props.files}
             />
@@ -61,8 +48,6 @@ export default function DriveContents(props: {
               files={props.files}
               folders={props.folders}
               currentFolderId={props.currentFolderId}
-              selectedItems={selectedItems}
-              onToggleSelect={handleToggleSelect}
             />
           </TabsContent>
           <TabsContent value="grid" className="mt-0">
@@ -70,8 +55,6 @@ export default function DriveContents(props: {
               files={props.files}
               folders={props.folders}
               currentFolderId={props.currentFolderId}
-              selectedItems={selectedItems}
-              onToggleSelect={handleToggleSelect}
             />
           </TabsContent>
         </Tabs>
