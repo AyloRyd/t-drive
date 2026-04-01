@@ -1,4 +1,4 @@
-import { Folder as FolderIcon, FileIcon } from "lucide-react";
+import { FileIcon } from "./file-icon";
 import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
@@ -82,15 +82,12 @@ function DriveItemRow({
         >
           <Checkbox checked={isSelected} />
         </div>
-        {isFolder ? (
-          <FolderIcon
-            className="mr-3 shrink-0 text-yellow-500"
-            fill="currentColor"
-            size={20}
-          />
-        ) : (
-          <FileIcon className="mr-3 shrink-0 text-blue-400" size={20} />
-        )}
+        <FileIcon
+          type={isFolder ? "folder" : "file"}
+          name={item.name}
+          size={20}
+          className="mr-3 shrink-0"
+        />
         <span className="truncate">{item.name}</span>
       </div>
       <div className="truncate text-sm text-gray-400 max-md:hidden md:col-span-2">

@@ -1,4 +1,4 @@
-import { Folder as FolderIcon, FileIcon } from "lucide-react";
+import { FileIcon } from "./file-icon";
 import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
@@ -53,11 +53,11 @@ function DriveItemCard({
 }) {
   const content = (
     <>
-      {isFolder ? (
-        <FolderIcon className="text-yellow-500" fill="currentColor" size={48} />
-      ) : (
-        <FileIcon className="text-blue-400" size={48} />
-      )}
+      <FileIcon
+        type={isFolder ? "folder" : "file"}
+        name={item.name}
+        size={48}
+      />
       <span
         className="w-full truncate text-sm font-medium text-gray-200"
         title={item.name}
