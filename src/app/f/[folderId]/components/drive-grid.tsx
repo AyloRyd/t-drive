@@ -67,8 +67,6 @@ function DriveItemCard({
     </>
   );
 
-  const wrapperClass = "flex w-full flex-col items-center gap-3";
-
   return (
     <div
       className={`group relative flex flex-col items-center justify-center gap-4 rounded-xl border border-gray-700/50 p-6 text-center transition-colors hover:bg-gray-700/50 ${isSelected ? "bg-gray-800/80" : "bg-gray-800/30"}`}
@@ -87,14 +85,17 @@ function DriveItemCard({
         <ItemActions item={item} isFolder={isFolder} />
       </div>
       {isFolder ? (
-        <Link href={`/f/${item.id}`} className={wrapperClass}>
+        <Link
+          href={`/f/${item.id}`}
+          className="flex w-full flex-col items-center gap-3"
+        >
           {content}
         </Link>
       ) : (
         <a
           href={"url" in item ? item.url : "#"}
           target="_blank"
-          className={wrapperClass}
+          className="flex w-full flex-col items-center gap-3"
         >
           {content}
         </a>

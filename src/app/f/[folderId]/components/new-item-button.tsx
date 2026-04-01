@@ -27,7 +27,7 @@ export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
         <div className="fixed top-0 left-0 z-50 w-full">
           <Progress
             value={uploadProgress}
-            className="h-1.5 w-full rounded-none bg-teal-800 [&>div]:bg-teal-500"
+            className="h-1.5 w-full rounded-none bg-teal-950 [&>div]:bg-teal-500"
           />
         </div>
       )}

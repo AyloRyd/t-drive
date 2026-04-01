@@ -105,10 +105,10 @@ function DriveItemRow({
     </div>
   );
 
-  const liClassName = `cursor-pointer border-b border-gray-700/50 px-6 py-4 transition-colors last:border-b-0 hover:bg-gray-700/50 ${isSelected ? "bg-gray-800/80" : ""}`;
-
   return (
-    <li className={liClassName}>
+    <li
+      className={`cursor-pointer border-b border-gray-700/50 px-6 py-4 transition-colors last:border-b-0 hover:bg-gray-700/50 ${isSelected ? "bg-gray-800/80" : ""}`}
+    >
       {isFolder ? (
         <Link href={`/f/${item.id}`}>{content}</Link>
       ) : (
