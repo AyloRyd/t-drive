@@ -6,6 +6,8 @@
 @import "uploadthing/tw/v4";
 @source "../node_modules/@uploadthing/react/dist";
 
+@layer theme, base, clerk, components, utilities;
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -89,6 +91,27 @@
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+
+  --clerk-color-background: #09101f;
+  --clerk-color-neutral: white;
+  --clerk-color-primary: #9ca3af;
+  --clerk-color-primary-foreground: black;
+  --clerk-color-foreground: #ffffff;
+  --clerk-color-input-foreground: white;
+  --clerk-color-input: #161f2f;
+  --clerk-spacing: 1rem;
+  --clerk-border-radius: 0.5rem;
+
+  .cl-modalBackdrop {
+    background-color: var(
+      --clerk-color-modal-backdrop,
+      color-mix(
+        in srgb,
+        transparent,
+        var(--clerk-color-primary-foreground, light-dark(#000000, #ffffff)) 73%
+      )
+    );
+  }
 }
 
 .dark {

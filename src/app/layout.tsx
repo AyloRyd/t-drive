@@ -41,7 +41,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClerkProvider>
+        <ClerkProvider
+          appearance={{
+            theme: "simple",
+            cssLayerName: "clerk",
+          }}
+        >
           <QueryProvider>{children}</QueryProvider>
         </ClerkProvider>
         <Analytics />
