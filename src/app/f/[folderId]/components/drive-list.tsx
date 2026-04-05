@@ -104,12 +104,18 @@ function DriveItemRow({
 
   return (
     <li
-      className={`cursor-pointer border-b border-gray-700/50 px-6 py-4 transition-colors last:border-b-0 hover:bg-gray-700/50 ${isSelected ? "bg-gray-800/80" : ""}`}
+      className={`cursor-pointer border-b border-gray-700/50 transition-colors last:border-b-0 hover:bg-gray-700/50 ${isSelected ? "bg-gray-800/80" : ""}`}
     >
       {isFolder ? (
-        <Link href={`/f/${item.id}`}>{content}</Link>
+        <Link href={`/f/${item.id}`} className="block px-6 py-4">
+          {content}
+        </Link>
       ) : (
-        <a href={"url" in item ? item.url : "#"} target="_blank">
+        <a
+          href={"url" in item ? item.url : "#"}
+          target="_blank"
+          className="block px-6 py-4"
+        >
           {content}
         </a>
       )}
