@@ -73,7 +73,10 @@ export function useFolderUpload(currentFolderId: string) {
         await cleanupAbortedUpload(uploadedFileIds);
       }
     } finally {
-      if (!ctrl.signal.aborted) finishProcess();
+      if (!ctrl.signal.aborted) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        finishProcess();
+      }
       navigate.refresh();
       e.target.value = "";
     }

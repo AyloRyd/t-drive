@@ -10,7 +10,8 @@ import {
 import { ActionDialog } from "./action-dialog";
 import { UploadButton } from "~/components/uploadthing";
 import { createFolder } from "~/server/actions/folder.actions";
-import { useFolderUpload } from "~/hooks/useFolderUpload";
+import { useFolderUpload } from "~/hooks/use-folder-upload";
+import { useProgress } from "~/hooks/use-progress";
 
 interface NewItemButtonProps {
   currentFolderId: string;
@@ -19,6 +20,7 @@ interface NewItemButtonProps {
 export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
   const navigate = useRouter();
   const uploadFolder = useFolderUpload(currentFolderId);
+  const { startProcess, updateProgress, finishProcess } = useProgress();
 
   return (
     <>
@@ -75,10 +77,21 @@ export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
                   },
                   allowedContent: { display: "none" },
                 }}
+                onUploadProgress={(p) => {
+                  updateProgress(p / 100);
+                }}
+                onUploadBegin={() => {
+                  startProcess("upload", 1, null);
+                }}
                 onClientUploadComplete={() => {
-                  navigate.refresh();
+                  updateProgress(1);
+                  setTimeout(() => {
+                    finishProcess();
+                    navigate.refresh();
+                  }, 500);
                 }}
                 onUploadError={(error) => {
+                  finishProcess();
                   console.error("Upload failed", error);
                 }}
                 input={{ folderId: currentFolderId }}

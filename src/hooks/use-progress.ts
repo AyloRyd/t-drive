@@ -2,14 +2,14 @@ import { create } from "zustand";
 
 interface ProgressState {
   isProcessing: boolean;
-  type: "upload" | "download" | null;
+  type: "upload" | "download" | "delete" | null;
   processedCount: number;
   totalCount: number;
   abortController: AbortController | null;
   startProcess: (
-    type: "upload" | "download",
+    type: "upload" | "download" | "delete",
     totalCount: number,
-    controller: AbortController,
+    controller: AbortController | null,
   ) => void;
   updateProgress: (processedCount: number) => void;
   finishProcess: () => void;

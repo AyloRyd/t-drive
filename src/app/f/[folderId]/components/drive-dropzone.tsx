@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUploadThing } from "~/components/uploadthing";
+import { uploadFiles } from "~/components/uploadthing";
 import { Upload } from "lucide-react";
-import { Progress } from "~/components/ui/progress";
+import { useProgress } from "~/hooks/use-progress";
 
 interface DriveDropzoneProps {
   children: React.ReactNode;
@@ -16,28 +16,39 @@ export function DriveDropzone({
   currentFolderId,
 }: DriveDropzoneProps) {
   const navigate = useRouter();
+  const { startProcess, incrementProgress, finishProcess } = useProgress();
 
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-
-  const { startUpload } = useUploadThing("driveUploader", {
-    onUploadProgress: (p) => setUploadProgress(p),
-    onClientUploadComplete: () => {
-      setUploadProgress(null);
-      navigate.refresh();
-    },
-    onUploadError: (error) => {
-      setUploadProgress(null);
-      console.error("Upload failed", error);
-    },
-  });
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const files = Array.from(e.dataTransfer.files);
-      await startUpload(files, { folderId: currentFolderId });
+
+      const ctrl = new AbortController();
+      startProcess("upload", files.length, ctrl);
+
+      try {
+        for (const file of files) {
+          if (ctrl.signal.aborted) break;
+
+          await uploadFiles("driveUploader", {
+            files: [file],
+            input: { folderId: currentFolderId },
+          });
+
+          incrementProgress();
+        }
+      } catch (err) {
+        console.error("Upload failed", err);
+      } finally {
+        if (!ctrl.signal.aborted) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          finishProcess();
+        }
+        navigate.refresh();
+      }
     }
   };
 
@@ -46,14 +57,6 @@ export function DriveDropzone({
       className="relative h-full w-full"
       onDragEnter={() => setIsDragging(true)}
     >
-      {uploadProgress !== null && (
-        <div className="fixed top-0 left-0 z-50 w-full">
-          <Progress
-            value={uploadProgress}
-            className="h-1.5 w-full rounded-none bg-teal-800 [&>div]:bg-teal-500"
-          />
-        </div>
-      )}
       {isDragging && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-950/80 backdrop-blur-sm"

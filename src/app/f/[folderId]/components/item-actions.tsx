@@ -14,6 +14,8 @@ import { ActionDialog } from "./action-dialog";
 import { ConfirmDialog } from "./confirm-dialog";
 import { PropertiesDialog } from "./properties-dialog";
 import { useState } from "react";
+import { useProgress } from "~/hooks/use-progress";
+import { useRouter } from "next/navigation";
 import type { DriveItemType } from "~/lib/types";
 
 export function ItemActions({
@@ -24,6 +26,8 @@ export function ItemActions({
   isFolder: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const { startProcess, incrementProgress, finishProcess } = useProgress();
+  const navigate = useRouter();
 
   function handleDownload(driveItemType: DriveItemType) {
     return async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -120,10 +124,20 @@ export function ItemActions({
           }
           actionLabel="Delete"
           onAction={async () => {
-            if (isFolder) {
-              await deleteFolder(item.id);
-            } else {
-              await deleteFile(item.id);
+            startProcess("delete", 1, null);
+            setOpen(false);
+
+            try {
+              if (isFolder) {
+                await deleteFolder(item.id);
+              } else {
+                await deleteFile(item.id);
+              }
+              incrementProgress();
+              await new Promise((resolve) => setTimeout(resolve, 500));
+            } finally {
+              finishProcess();
+              navigate.refresh();
             }
           }}
         />
