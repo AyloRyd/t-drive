@@ -73,6 +73,9 @@ importers:
       shadcn:
         specifier: ^4.0.5
         version: 4.0.5(@types/node@25.3.3)(babel-plugin-macros@3.1.0)(typescript@5.9.3)
+      svix:
+        specifier: ^1.90.0
+        version: 1.90.0
       tailwind-merge:
         specifier: ^3.5.0
         version: 3.5.0
@@ -7402,6 +7405,12 @@ packages:
       }
     engines: { node: ">= 0.4" }
 
+  svix@1.90.0:
+    resolution:
+      {
+        integrity: sha512-ljkZuyy2+IBEoESkIpn8sLM+sxJHQcPxlZFxU+nVDhltNfUMisMBzWX/UR8SjEnzoI28ZjCzMbmYAPwSTucoMw==,
+      }
+
   swr@2.3.4:
     resolution:
       {
@@ -7761,6 +7770,13 @@ packages:
       {
         integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==,
       }
+
+  uuid@10.0.0:
+    resolution:
+      {
+        integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==,
+      }
+    hasBin: true
 
   validate-npm-package-name@7.0.2:
     resolution:
@@ -12678,6 +12694,11 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  svix@1.90.0:
+    dependencies:
+      standardwebhooks: 1.0.0
+      uuid: 10.0.0
+
   swr@2.3.4(react@19.2.4):
     dependencies:
       dequal: 2.0.3
@@ -12894,6 +12915,8 @@ snapshots:
     optional: true
 
   util-deprecate@1.0.2: {}
+
+  uuid@10.0.0: {}
 
   validate-npm-package-name@7.0.2: {}
 
