@@ -91,3 +91,47 @@ export async function getFolderPropertiesAction(folderId: string) {
 
   return { success: true, data };
 }
+
+export async function createFolderStructure(
+  paths: string[],
+  targetFolderId: string,
+) {
+  const session = await auth();
+  if (!session.userId) {
+    return { error: "Unauthorized" };
+  }
+  const userId = session.userId;
+
+  const idMap: Record<string, string> = { "": targetFolderId };
+
+  const sortedPaths = [...paths].sort((a, b) => a.length - b.length);
+
+  for (const path of sortedPaths) {
+    if (!path) continue;
+
+    const parts = path.split("/");
+    let currentPath = "";
+
+    for (const part of parts) {
+      if (!part) continue;
+
+      const parentPath = currentPath;
+      currentPath = currentPath ? `${currentPath}/${part}` : part;
+
+      if (!idMap[currentPath]) {
+        const parentId = idMap[parentPath];
+        if (!parentId) {
+          throw new Error(`Parent folder ID not found for ${parentPath}`);
+        }
+
+        const res = await mutations.createFolderForUser(part, parentId, userId);
+        idMap[currentPath] = res[0]!.id;
+      }
+    }
+  }
+
+  const c = await cookies();
+  c.set("force-refresh", JSON.stringify(Math.random()));
+
+  return { success: true, idMap };
+}

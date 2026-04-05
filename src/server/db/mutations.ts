@@ -14,10 +14,13 @@ export const mutations = {
     };
     userId: string;
   }) {
-    return await db.insert(filesTable).values({
-      ...input.file,
-      ownerId: input.userId,
-    });
+    return await db
+      .insert(filesTable)
+      .values({
+        ...input.file,
+        ownerId: input.userId,
+      })
+      .returning();
   },
 
   renameFileById: async function (
@@ -42,11 +45,14 @@ export const mutations = {
     parentId: string,
     userId: string,
   ) {
-    return await db.insert(foldersTable).values({
-      name,
-      parent: parentId,
-      ownerId: userId,
-    });
+    return await db
+      .insert(foldersTable)
+      .values({
+        name,
+        parent: parentId,
+        ownerId: userId,
+      })
+      .returning();
   },
 
   renameFolderById: async function (
@@ -133,17 +139,27 @@ export const mutations = {
 
     await db.insert(foldersTable).values([
       {
-        name: "Trash",
-        parent: rootFolderId,
-        ownerId: userId,
-      },
-      {
-        name: "Shared",
-        parent: rootFolderId,
-        ownerId: userId,
-      },
-      {
         name: "Documents",
+        parent: rootFolderId,
+        ownerId: userId,
+      },
+      {
+        name: "Images",
+        parent: rootFolderId,
+        ownerId: userId,
+      },
+      {
+        name: "Videos",
+        parent: rootFolderId,
+        ownerId: userId,
+      },
+      {
+        name: "Presentations",
+        parent: rootFolderId,
+        ownerId: userId,
+      },
+      {
+        name: "Others",
         parent: rootFolderId,
         ownerId: userId,
       },

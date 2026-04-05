@@ -14,6 +14,7 @@ import { ActionDialog } from "./action-dialog";
 import { ConfirmDialog } from "./confirm-dialog";
 import { PropertiesDialog } from "./properties-dialog";
 import { useState } from "react";
+import type { DriveItemType } from "~/lib/types";
 
 export function ItemActions({
   item,
@@ -24,18 +25,11 @@ export function ItemActions({
 }) {
   const [open, setOpen] = useState(false);
 
-  function handleFileDownload() {
+  function handleDownload(driveItemType: DriveItemType) {
     return async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      if (isFolder) return;
       e.preventDefault();
-      const res = await fetch(`/api/download?fileId=${item.id}`);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = item.name;
-      a.click();
-      URL.revokeObjectURL(url);
+      e.stopPropagation();
+      window.location.href = `/api/download/${driveItemType}?${driveItemType}Id=${item.id}`;
     };
   }
 
@@ -70,7 +64,6 @@ export function ItemActions({
             </button>
           }
         />
-
         <ActionDialog
           isFolder={isFolder}
           trigger={
@@ -95,17 +88,23 @@ export function ItemActions({
             }
           }}
         />
-
-        {!isFolder && (
+        {isFolder ? (
           <button
-            onClick={handleFileDownload()}
+            onClick={handleDownload("folder")}
+            className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-700/70 hover:text-white"
+          >
+            <Download size={15} />
+            Download
+          </button>
+        ) : (
+          <button
+            onClick={handleDownload("file")}
             className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-700/70 hover:text-white"
           >
             <Download size={15} />
             Download
           </button>
         )}
-
         <ConfirmDialog
           trigger={
             <button className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition-colors hover:bg-red-900/30 hover:text-red-300">

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, FolderPlus, Upload } from "lucide-react";
+import { Plus, Folder, Upload, FolderUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Popover,
@@ -11,7 +10,7 @@ import {
 import { ActionDialog } from "./action-dialog";
 import { UploadButton } from "~/components/uploadthing";
 import { createFolder } from "~/server/actions/folder.actions";
-import { Progress } from "~/components/ui/progress";
+import { useFolderUpload } from "~/hooks/useFolderUpload";
 
 interface NewItemButtonProps {
   currentFolderId: string;
@@ -19,18 +18,10 @@ interface NewItemButtonProps {
 
 export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
   const navigate = useRouter();
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const uploadFolder = useFolderUpload(currentFolderId);
 
   return (
     <>
-      {uploadProgress !== null && (
-        <div className="fixed top-0 left-0 z-50 w-full">
-          <Progress
-            value={uploadProgress}
-            className="h-1.5 w-full rounded-none bg-teal-950 [&>div]:bg-teal-500"
-          />
-        </div>
-      )}
       <Popover>
         <PopoverTrigger asChild>
           <button className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-gray-800 text-gray-300 transition-colors hover:bg-gray-700 hover:text-white focus:outline-none">
@@ -46,7 +37,7 @@ export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
             isFolder={true}
             trigger={
               <button className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-800 focus:bg-gray-800 focus:outline-none">
-                <FolderPlus size={16} />
+                <Folder size={16} />
                 New folder
               </button>
             }
@@ -57,6 +48,19 @@ export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
               await createFolder(name, currentFolderId);
             }}
           />
+          <label className="group relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-800 focus:bg-gray-800 focus:outline-none">
+            <FolderUp size={16} className="shrink-0" />
+            <span className="truncate">Upload folder</span>
+            <input
+              type="file"
+              onChange={uploadFolder}
+              className="hidden"
+              // @ts-expect-error react types don't have webkitdirectory or directory
+              webkitdirectory=""
+              directory=""
+              multiple
+            />
+          </label>
           <div className="group relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-800 focus:bg-gray-800 focus:outline-none">
             <Upload size={16} className="shrink-0" />
             <span className="truncate">Upload file</span>
@@ -71,14 +75,10 @@ export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
                   },
                   allowedContent: { display: "none" },
                 }}
-                onUploadProgress={(p) => setUploadProgress(p)}
-                onUploadBegin={() => setUploadProgress(0)}
                 onClientUploadComplete={() => {
-                  setUploadProgress(null);
                   navigate.refresh();
                 }}
                 onUploadError={(error) => {
-                  setUploadProgress(null);
                   console.error("Upload failed", error);
                 }}
                 input={{ folderId: currentFolderId }}

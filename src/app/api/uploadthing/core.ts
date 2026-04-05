@@ -40,7 +40,7 @@ export const ourFileRouter = {
       console.log("Upload complete for userId:", metadata.userId);
       console.log("file url", file.ufsUrl);
 
-      await mutations.createFile({
+      const createdFile = await mutations.createFile({
         file: {
           name: file.name,
           size: file.size,
@@ -50,7 +50,7 @@ export const ourFileRouter = {
         userId: metadata.userId,
       });
 
-      return { uploadedBy: metadata.userId };
+      return { uploadedBy: metadata.userId, fileId: createdFile[0]?.id };
     }),
 } satisfies FileRouter;
 

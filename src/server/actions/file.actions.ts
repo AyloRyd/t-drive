@@ -77,3 +77,35 @@ export async function getFilePropertiesAction(fileId: string) {
 
   return { success: true, data };
 }
+
+export async function cleanupAbortedUpload(fileIds: string[]) {
+  const session = await auth();
+  if (!session.userId) {
+    return { error: "Unauthorized" };
+  }
+
+  if (fileIds.length === 0) return { success: true };
+
+  const filesToDelete = [];
+  for (const fileId of fileIds) {
+    const file = await queries.getFileById(fileId, session.userId);
+    if (file) {
+      filesToDelete.push(file);
+      await mutations.deleteFileById(fileId, session.userId);
+    }
+  }
+
+  if (filesToDelete.length > 0) {
+    const utapiResult = await utApi.deleteFiles(
+      filesToDelete.map((f) =>
+        f.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
+      ),
+    );
+    console.log("Cleanup UploadThing:", utapiResult);
+  }
+
+  const c = await cookies();
+  c.set("force-refresh", JSON.stringify(Math.random()));
+
+  return { success: true };
+}

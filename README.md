@@ -3,6 +3,7 @@
 A file storage app made with:
 
 - Framework: Next.js, React, TypeScript
+- State Management: Zustand, TanStack Query
 - UI: Tailwind CSS, Shadcn UI
 - Database: Neon (Serverless Postgres), Drizzle ORM
 - Auth: Clerk

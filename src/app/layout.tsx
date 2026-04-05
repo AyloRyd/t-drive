@@ -9,6 +9,7 @@ import { cn } from "~/lib/utils";
 
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GlobalProgress } from "~/components/global-progress";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -47,7 +48,10 @@ export default function RootLayout({
             cssLayerName: "clerk",
           }}
         >
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <GlobalProgress />
+            {children}
+          </QueryProvider>
         </ClerkProvider>
         <Analytics />
         <SpeedInsights />

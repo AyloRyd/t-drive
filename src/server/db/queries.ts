@@ -101,6 +101,20 @@ export const queries = {
   },
 
   getFolderDetails: async function (folderId: string, userId: string) {
+    const tree = await queries.getFolderTree(folderId, userId);
+    if (!tree) return null;
+
+    const totalSize = tree.files.reduce((acc, file) => acc + file.size, 0);
+    const totalItems = tree.folders.length - 1 + tree.files.length;
+
+    return {
+      ...tree.folder,
+      totalSize,
+      totalItems,
+    };
+  },
+
+  getFolderTree: async function (folderId: string, userId: string) {
     const folder = await queries.getFolderById(folderId, userId);
     if (!folder) return null;
 
@@ -140,13 +154,12 @@ export const queries = {
         );
     }
 
-    const totalSize = filesUnder.reduce((acc, file) => acc + file.size, 0);
-    const totalItems = foldersUnderArray.length - 1 + filesUnder.length;
+    const fetchedFolders = allFolders.filter((f) => foldersUnder.has(f.id));
 
     return {
-      ...folder,
-      totalSize,
-      totalItems,
+      folder,
+      folders: fetchedFolders,
+      files: filesUnder,
     };
   },
 };
