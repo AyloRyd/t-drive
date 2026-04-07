@@ -28,13 +28,13 @@ export default function Loading() {
 
           <div className="mb-2 flex items-center justify-between rounded-xl bg-gray-800/50 p-3 px-6 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
             <div className="flex items-center gap-4">
-              <div className="h-4 w-4 animate-pulse rounded-[4px] bg-gray-700" />
+              <div className="h-4 w-4 animate-pulse rounded-lg bg-gray-700" />
               <div className="h-8 w-8 animate-pulse rounded-lg bg-gray-700" />
             </div>
             <div className="flex-1" />
             <div className="flex items-center gap-4">
               <div className="h-8 w-8 animate-pulse rounded-lg bg-gray-700" />
-              <div className="h-8 w-[84px] animate-pulse rounded-lg bg-gray-700" />
+              <div className="h-8 w-21 animate-pulse rounded-lg bg-gray-700" />
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@ export default function Loading() {
           <div className="overflow-hidden rounded-xl bg-gray-800/50 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
             <div className="border-t-0 border-r-0 border-b border-l-0 border-gray-700/50 bg-gray-800/30 px-6 py-4">
               <div className="grid grid-cols-12 items-center gap-4 text-xs font-medium text-gray-400 md:text-sm">
-                <div className="col-span-12 flex items-center gap-4 md:col-span-7">
+                <div className="col-span-7 flex items-center gap-4 md:col-span-7">
                   <div className="w-4 shrink-0" />
                   <span>Name</span>
                 </div>

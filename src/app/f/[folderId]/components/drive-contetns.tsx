@@ -10,6 +10,7 @@ import { DriveActionBar } from "./drive-action-bar";
 import { useEffect } from "react";
 import { useSelectedItems } from "~/hooks/use-selected-items";
 import { DriveDropzone } from "./drive-dropzone";
+import { EmptyState } from "./empty-state";
 
 export default function DriveContents(props: {
   files: DBFileType[];
@@ -20,6 +21,7 @@ export default function DriveContents(props: {
 }) {
   const [view, setView] = useViewPreference();
   const clearSelection = useSelectedItems((state) => state.clearSelection);
+  const isEmpty = props.files.length === 0 && props.folders.length === 0;
 
   useEffect(() => {
     clearSelection();
@@ -45,20 +47,26 @@ export default function DriveContents(props: {
                 files={props.files}
               />
             </div>
-            <TabsContent value="list" className="mt-0">
-              <DriveContentsList
-                files={props.files}
-                folders={props.folders}
-                currentFolderId={props.currentFolderId}
-              />
-            </TabsContent>
-            <TabsContent value="grid" className="mt-0">
-              <DriveContentsGrid
-                files={props.files}
-                folders={props.folders}
-                currentFolderId={props.currentFolderId}
-              />
-            </TabsContent>
+            {isEmpty ? (
+              <EmptyState currentFolderId={props.currentFolderId} />
+            ) : (
+              <>
+                <TabsContent value="list" className="mt-0">
+                  <DriveContentsList
+                    files={props.files}
+                    folders={props.folders}
+                    currentFolderId={props.currentFolderId}
+                  />
+                </TabsContent>
+                <TabsContent value="grid" className="mt-0">
+                  <DriveContentsGrid
+                    files={props.files}
+                    folders={props.folders}
+                    currentFolderId={props.currentFolderId}
+                  />
+                </TabsContent>
+              </>
+            )}
           </Tabs>
         </div>
       </div>

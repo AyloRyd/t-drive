@@ -3,6 +3,8 @@ import {
   FileIcon as DefaultFileIcon,
   Image as ImageIcon,
   FileText as DocumentIcon,
+  Table as TableIcon,
+  Presentation as PresentationIcon,
   Code as CodeIcon,
   Film as VideoIcon,
   Music as AudioIcon,
@@ -61,6 +63,14 @@ const EXTENSION_MAP: Record<string, IconConfig> = Object.fromEntries([
   ...exts("pdf,doc,docx,txt,md,rtf", {
     icon: DocumentIcon,
     className: "text-slate-400",
+  }),
+  ...exts("xlsx,xls,csv", {
+    icon: TableIcon,
+    className: "text-green-400",
+  }),
+  ...exts("ppt,pptx", {
+    icon: PresentationIcon,
+    className: "text-yellow-400",
   }),
   ...exts(
     "js,ts,jsx,tsx,html,css,json,py,rs,go,cpp,hpp,c,h,cs,java,php,rb,swift,kt,kts,dart,lua,sh,bash,zsh,fish",
