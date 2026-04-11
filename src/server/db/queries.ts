@@ -162,4 +162,8 @@ export const queries = {
       files: filesUnder,
     };
   },
+
+  getAllFilesForUser: async function (userId: string) {
+    return db.select().from(filesTable).where(eq(filesTable.ownerId, userId));
+  },
 };

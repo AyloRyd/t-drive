@@ -1,11 +1,10 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
-import { db } from "~/server/db";
-import { filesTable, foldersTable } from "~/server/db/schema";
 import { env } from "~/env";
+import { queries } from "~/server/db/queries";
+import { mutations } from "~/server/db/mutations";
 
 const utApi = new UTApi();
 
@@ -53,20 +52,19 @@ export async function POST(req: Request) {
     const userId = event.data.id;
 
     try {
-      const userFiles = await db
-        .select()
-        .from(filesTable)
-        .where(eq(filesTable.ownerId, userId));
+      const userFiles = await queries.getAllFilesForUser(userId);
 
       if (userFiles.length > 0) {
         const fileKeys = userFiles.map((f) =>
-          f.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
+          f.url.replace(env.UPLOADTHING_APP_URL, ""),
         );
         await utApi.deleteFiles(fileKeys);
       }
 
-      await db.delete(filesTable).where(eq(filesTable.ownerId, userId));
-      await db.delete(foldersTable).where(eq(foldersTable.ownerId, userId));
+      await Promise.all([
+        mutations.deleteAllFilesForUser(userId),
+        mutations.deleteAllFoldersForUser(userId),
+      ]);
 
       console.log(`Cleaned up all data for deleted user: ${userId}`);
     } catch (err) {

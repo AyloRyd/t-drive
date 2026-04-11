@@ -5,6 +5,7 @@ import { UTApi } from "uploadthing/server";
 import { cookies } from "next/headers";
 import { mutations } from "../db/mutations";
 import { queries } from "../db/queries";
+import { env } from "~/env";
 
 const utApi = new UTApi();
 
@@ -25,7 +26,7 @@ export async function renameFile({
     return { error: "File not found" };
   }
 
-  const fileKey = file.url.replace("https://8wqc1o9kco.ufs.sh/f/", "");
+  const fileKey = file.url.replace(env.UPLOADTHING_APP_URL, "");
   const utapiResult = await utApi.renameFiles({
     fileKey,
     newName,
@@ -52,7 +53,7 @@ export const deleteFile = async (fileId: string) => {
   }
 
   const utapiResult = await utApi.deleteFiles([
-    file.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
+    file.url.replace(env.UPLOADTHING_APP_URL, ""),
   ]);
   console.log(utapiResult);
 
@@ -97,9 +98,7 @@ export async function cleanupAbortedUpload(fileIds: string[]) {
 
   if (filesToDelete.length > 0) {
     const utapiResult = await utApi.deleteFiles(
-      filesToDelete.map((f) =>
-        f.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
-      ),
+      filesToDelete.map((f) => f.url.replace(env.UPLOADTHING_APP_URL, "")),
     );
     console.log("Cleanup UploadThing:", utapiResult);
   }

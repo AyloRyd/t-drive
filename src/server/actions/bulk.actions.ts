@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { mutations } from "../db/mutations";
 import { queries } from "../db/queries";
 import type { SelectedDriveItem } from "~/lib/types";
+import { env } from "~/env";
 
 const utApi = new UTApi();
 
@@ -21,9 +22,7 @@ export const deleteMultipleItems = async (items: SelectedDriveItem[]) => {
     if (item.type === "file") {
       const file = await queries.getFileById(item.id, session.userId);
       if (file) {
-        fileIdsToUTKeys.push(
-          file.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
-        );
+        fileIdsToUTKeys.push(file.url.replace(env.UPLOADTHING_APP_URL, ""));
         await mutations.deleteFileById(item.id, session.userId);
       }
     } else if (item.type === "folder") {
@@ -36,7 +35,7 @@ export const deleteMultipleItems = async (items: SelectedDriveItem[]) => {
         if (filesToDelete && filesToDelete.length > 0) {
           fileIdsToUTKeys.push(
             ...filesToDelete.map((f) =>
-              f.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
+              f.url.replace(env.UPLOADTHING_APP_URL, ""),
             ),
           );
         }

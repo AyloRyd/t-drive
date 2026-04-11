@@ -5,6 +5,7 @@ import { UTApi } from "uploadthing/server";
 import { cookies } from "next/headers";
 import { mutations } from "../db/mutations";
 import { queries } from "../db/queries";
+import { env } from "~/env";
 
 const utApi = new UTApi();
 
@@ -65,9 +66,7 @@ export const deleteFolder = async (folderId: string) => {
 
   if (filesToDelete && filesToDelete.length > 0) {
     const utapiResult = await utApi.deleteFiles(
-      filesToDelete.map((f) =>
-        f.url.replace("https://8wqc1o9kco.ufs.sh/f/", ""),
-      ),
+      filesToDelete.map((f) => f.url.replace(env.UPLOADTHING_APP_URL, "")),
     );
     console.log(utapiResult);
   }

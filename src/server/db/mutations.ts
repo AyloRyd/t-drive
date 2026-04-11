@@ -167,4 +167,14 @@ export const mutations = {
 
     return rootFolderId;
   },
+
+  deleteAllFilesForUser: async function (userId: string) {
+    return await db.delete(filesTable).where(eq(filesTable.ownerId, userId));
+  },
+
+  deleteAllFoldersForUser: async function (userId: string) {
+    return await db
+      .delete(foldersTable)
+      .where(eq(foldersTable.ownerId, userId));
+  },
 };
