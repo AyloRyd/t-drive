@@ -43,7 +43,7 @@ export default function Loading() {
           <div className="overflow-hidden rounded-xl bg-gray-800/50 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
             <div className="border-t-0 border-r-0 border-b border-l-0 border-gray-700/50 bg-gray-800/30 px-6 py-4">
               <div className="grid grid-cols-12 items-center gap-4 text-xs font-medium text-gray-400 md:text-sm">
-                <div className="col-span-7 flex items-center gap-4 md:col-span-7">
+                <div className="col-span-7 flex items-center gap-4">
                   <div className="w-4 shrink-0" />
                   <span>Name</span>
                 </div>
@@ -61,10 +61,10 @@ export default function Loading() {
                   className="border-b border-gray-700/50 px-6 py-5 last:border-b-0"
                 >
                   <div className="grid grid-cols-12 items-center gap-4">
-                    <div className="col-span-12 flex items-center md:col-span-7">
+                    <div className="col-span-7 flex items-center">
                       <div className="mr-3 h-4 w-4 shrink-0 animate-pulse rounded-[4px] bg-gray-700" />
                       <div className="mr-3 h-5 w-5 shrink-0 animate-pulse rounded-md bg-gray-700" />
-                      <div className="h-4 w-48 animate-pulse rounded-md bg-gray-700" />
+                      <div className="h-4 w-full max-w-48 animate-pulse rounded-md bg-gray-700" />
                     </div>
                     <div className="max-md:hidden md:col-span-2">
                       <div className="h-4 w-24 animate-pulse rounded-md bg-gray-700" />
