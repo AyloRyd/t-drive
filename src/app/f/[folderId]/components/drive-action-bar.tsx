@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, List, LayoutGrid } from "lucide-react";
+import { Trash2, List, LayoutGrid, Download } from "lucide-react";
 import { Checkbox } from "~/components/ui/checkbox";
 import { ConfirmDialog } from "./confirm-dialog";
 import { deleteMultipleItems } from "~/server/actions/bulk.actions";
@@ -43,6 +43,48 @@ export function DriveActionBar({
     }
   };
 
+  const handleBulkDownload = async () => {
+    if (!someSelected) return;
+
+    startProcess("download", selectedItems.length, null);
+    try {
+      const res = await fetch("/api/download/bulk", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ items: selectedItems }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Bulk download failed with status ${res.status}`);
+      }
+
+      const blob = await res.blob();
+      const contentDisposition = res.headers.get("Content-Disposition");
+      const filenameMatch = contentDisposition?.match(
+        /filename\*=UTF-8''([^;]+)/,
+      );
+      const filename = filenameMatch?.[1]
+        ? decodeURIComponent(filenameMatch[1])
+        : "t-drive-dowload.zip";
+
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      updateProgress(selectedItems.length);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      finishProcess();
+    }
+  };
+
   return (
     <div className="flex items-center justify-between rounded-xl bg-gray-800/50 p-3 px-6 shadow-xl ring-1 ring-gray-700/50 backdrop-blur-md">
       <div className="flex items-center gap-4">
@@ -51,6 +93,18 @@ export function DriveActionBar({
       </div>
       <div className="flex-1" />
       <div className="flex items-center gap-4">
+        <button
+          onClick={handleBulkDownload}
+          disabled={!someSelected}
+          className={
+            someSelected
+              ? "flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-sky-900/50 text-sky-500 transition-colors hover:bg-sky-900 hover:text-sky-400"
+              : "flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800 text-gray-600 opacity-50"
+          }
+          aria-label="Download selected items"
+        >
+          <Download size={18} />
+        </button>
         {someSelected ? (
           <ConfirmDialog
             trigger={

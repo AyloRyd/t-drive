@@ -34,6 +34,7 @@ export default function Loading() {
             <div className="flex-1" />
             <div className="flex items-center gap-4">
               <div className="h-8 w-8 animate-pulse rounded-lg bg-gray-700" />
+              <div className="h-8 w-8 animate-pulse rounded-lg bg-gray-700" />
               <div className="h-8 w-21 animate-pulse rounded-lg bg-gray-700" />
             </div>
           </div>
