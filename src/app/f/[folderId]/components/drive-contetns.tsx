@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { useSelectedItems } from "~/hooks/use-selected-items";
 import { DriveDropzone } from "./drive-dropzone";
 import { EmptyState } from "./empty-state";
+import { FileViewerDialog } from "./file-viewer/file-viewer-dialog";
 
 export default function DriveContents(props: {
   files: DBFileType[];
@@ -70,6 +71,7 @@ export default function DriveContents(props: {
           </Tabs>
         </div>
       </div>
+      <FileViewerDialog />
     </DriveDropzone>
   );
 }

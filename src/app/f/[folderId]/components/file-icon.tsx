@@ -12,6 +12,7 @@ import {
   AppWindow as AppIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { getFileKind, type FileKind } from "~/lib/file-kind";
 
 export function FileIcon({
   type,
@@ -51,48 +52,23 @@ const DEFAULT_FILE_CONFIG: IconConfig = {
   className: "text-gray-400",
 };
 
-function exts(list: string, config: IconConfig) {
-  return list.split(",").map((ext) => [ext.trim(), config] as const);
-}
-
-const EXTENSION_MAP: Record<string, IconConfig> = Object.fromEntries([
-  ...exts("png,jpg,jpeg,gif,webp,svg", {
-    icon: ImageIcon,
-    className: "text-blue-400",
-  }),
-  ...exts("pdf,doc,docx,txt,md,rtf", {
-    icon: DocumentIcon,
-    className: "text-slate-400",
-  }),
-  ...exts("xlsx,xls,csv", {
-    icon: TableIcon,
-    className: "text-green-400",
-  }),
-  ...exts("ppt,pptx", {
-    icon: PresentationIcon,
-    className: "text-yellow-400",
-  }),
-  ...exts(
-    "js,ts,jsx,tsx,html,css,json,py,rs,go,cpp,hpp,c,h,cs,java,php,rb,swift,kt,kts,dart,lua,sh,bash,zsh,fish",
-    { icon: CodeIcon, className: "text-purple-400" },
-  ),
-  ...exts("mp4,avi,mov,webm,mkv", {
-    icon: VideoIcon,
-    className: "text-pink-400",
-  }),
-  ...exts("mp3,wav,ogg,flac", { icon: AudioIcon, className: "text-teal-400" }),
-  ...exts("zip,rar,7z,tar,gz", {
-    icon: ArchiveIcon,
-    className: "text-orange-400",
-  }),
-  ...exts("exe,msi,dmg,deb,rpm,bat,cmd,appimage", {
-    icon: AppIcon,
-    className: "text-red-400",
-  }),
-]);
+const KIND_CONFIG: Record<FileKind, IconConfig> = {
+  image: { icon: ImageIcon, className: "text-blue-400" },
+  pdf: { icon: DocumentIcon, className: "text-slate-400" },
+  markdown: { icon: DocumentIcon, className: "text-slate-400" },
+  text: { icon: DocumentIcon, className: "text-slate-400" },
+  document: { icon: DocumentIcon, className: "text-slate-400" },
+  sheet: { icon: TableIcon, className: "text-green-400" },
+  presentation: { icon: PresentationIcon, className: "text-yellow-400" },
+  code: { icon: CodeIcon, className: "text-purple-400" },
+  video: { icon: VideoIcon, className: "text-pink-400" },
+  audio: { icon: AudioIcon, className: "text-teal-400" },
+  archive: { icon: ArchiveIcon, className: "text-orange-400" },
+  app: { icon: AppIcon, className: "text-red-400" },
+  unknown: DEFAULT_FILE_CONFIG,
+};
 
 function getIconConfig(type: "folder" | "file", name: string): IconConfig {
   if (type === "folder") return FOLDER_CONFIG;
-  const ext = name.split(".").pop()?.toLowerCase() ?? "";
-  return EXTENSION_MAP[ext] ?? DEFAULT_FILE_CONFIG;
+  return KIND_CONFIG[getFileKind(name)];
 }

@@ -4,6 +4,8 @@ import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useSelectedItems } from "~/hooks/use-selected-items";
+import { useFileViewer } from "~/hooks/use-file-viewer";
+import { isModifiedClick } from "~/lib/utils";
 
 export default function DriveContentsGrid(props: {
   files: DBFileType[];
@@ -51,6 +53,9 @@ function DriveItemCard({
   isSelected: boolean;
   onToggleSelect: () => void;
 }) {
+  const openViewer = useFileViewer((state) => state.openViewer);
+  const file = !isFolder && "url" in item ? item : null;
+
   const content = (
     <>
       <FileIcon
@@ -93,8 +98,14 @@ function DriveItemCard({
         </Link>
       ) : (
         <a
-          href={"url" in item ? item.url : "#"}
+          href={file?.url ?? "#"}
           target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            if (!file || isModifiedClick(e)) return;
+            e.preventDefault();
+            openViewer(file);
+          }}
           className="flex w-full flex-col items-center gap-3"
         >
           {content}

@@ -27,3 +27,11 @@ export function formatDate(date: Date | string | null | undefined): string {
   const minutes = String(d.getMinutes()).padStart(2, "0");
   return `${day}.${month}.${year}, ${hours}:${minutes}`;
 }
+
+/**
+ * True for clicks that should keep the browser's own link behaviour —
+ * middle click, or ctrl/cmd/shift/alt click to open in a tab or window.
+ */
+export function isModifiedClick(e: React.MouseEvent): boolean {
+  return e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+}

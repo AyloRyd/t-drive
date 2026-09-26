@@ -159,3 +159,119 @@
     @apply font-sans;
   }
 }
+
+/* File viewer: Shiki output and rendered markdown. */
+@layer components {
+  .drive-code pre {
+    @apply min-h-full py-4 text-[13px] leading-6;
+  }
+
+  .drive-code code {
+    @apply block w-fit min-w-full;
+    counter-reset: line;
+  }
+
+  .drive-code .line::before {
+    counter-increment: line;
+    content: counter(line);
+    @apply mr-5 ml-4 inline-block w-8 text-right text-gray-600 select-none;
+  }
+
+  .drive-code pre:not(:has(.line)) {
+    @apply px-4;
+  }
+
+  .drive-prose {
+    @apply text-sm leading-7 text-gray-300;
+  }
+
+  .drive-prose > *:first-child {
+    @apply mt-0;
+  }
+
+  .drive-prose h1 {
+    @apply mt-8 mb-4 border-b border-gray-700/50 pb-2 text-2xl font-semibold text-gray-100;
+  }
+
+  .drive-prose h2 {
+    @apply mt-8 mb-3 border-b border-gray-700/50 pb-2 text-xl font-semibold text-gray-100;
+  }
+
+  .drive-prose h3 {
+    @apply mt-6 mb-2 text-lg font-semibold text-gray-100;
+  }
+
+  .drive-prose h4,
+  .drive-prose h5,
+  .drive-prose h6 {
+    @apply mt-5 mb-2 text-base font-semibold text-gray-200;
+  }
+
+  .drive-prose p {
+    @apply my-4;
+  }
+
+  .drive-prose a {
+    @apply text-teal-400 underline underline-offset-2 hover:text-teal-300;
+  }
+
+  .drive-prose strong {
+    @apply font-semibold text-gray-100;
+  }
+
+  .drive-prose ul {
+    @apply my-4 list-disc pl-6;
+  }
+
+  .drive-prose ol {
+    @apply my-4 list-decimal pl-6;
+  }
+
+  .drive-prose li {
+    @apply my-1;
+  }
+
+  .drive-prose li::marker {
+    @apply text-gray-500;
+  }
+
+  .drive-prose input[type="checkbox"] {
+    @apply mr-2 align-middle accent-teal-500;
+  }
+
+  .drive-prose blockquote {
+    @apply my-4 border-l-4 border-gray-700 pl-4 text-gray-400 italic;
+  }
+
+  .drive-prose code {
+    @apply rounded bg-gray-800 px-1.5 py-0.5 font-mono text-[0.85em] text-teal-300;
+  }
+
+  .drive-prose pre {
+    @apply my-4 overflow-x-auto rounded-lg bg-gray-950/70 p-4 ring-1 ring-gray-700/50;
+  }
+
+  .drive-prose pre code {
+    @apply bg-transparent p-0 text-[13px] leading-6 text-gray-300;
+  }
+
+  .drive-prose table {
+    @apply my-4 w-full border-collapse text-left;
+  }
+
+  .drive-prose th {
+    @apply border border-gray-700/60 bg-gray-800/60 px-3 py-2 font-semibold text-gray-200;
+  }
+
+  .drive-prose td {
+    @apply border border-gray-700/60 px-3 py-2;
+  }
+
+  .drive-prose hr {
+    @apply my-8 border-gray-700/50;
+  }
+
+  .drive-prose img {
+    @apply my-4 max-w-full rounded-lg;
+  }
+}

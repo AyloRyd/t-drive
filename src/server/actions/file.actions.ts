@@ -5,6 +5,9 @@ import { mutations } from "../db/mutations";
 import { queries } from "../db/queries";
 import { env } from "~/env";
 import { createAction } from "./_utils/create-action";
+import { highlightCode } from "../services/highlight";
+import { getLanguageId, TEXT_PREVIEW_LIMIT_BYTES } from "~/lib/file-kind";
+import { formatSize } from "~/lib/utils";
 
 const utApi = new UTApi();
 
@@ -84,5 +87,39 @@ export const cleanupAbortedUpload = createAction(
     }
 
     return { success: true, data: {} };
+  },
+);
+
+export const getFilePreview = createAction(
+  { withAuth: true, refreshCookies: false },
+  async (session, fileId: string) => {
+    const file = await queries.getFileById(fileId, session.userId);
+    if (!file) {
+      return { success: false, error: "File not found" };
+    }
+
+    if (file.size > TEXT_PREVIEW_LIMIT_BYTES) {
+      return {
+        success: false,
+        error: `This file is too large to preview (over ${formatSize(TEXT_PREVIEW_LIMIT_BYTES)}).`,
+      };
+    }
+
+    let text: string;
+    try {
+      const res = await fetch(file.url);
+      if (!res.ok) {
+        throw new Error(`Storage responded with ${res.status}`);
+      }
+      text = await res.text();
+    } catch (error) {
+      console.error("Preview fetch error:", error);
+      return { success: false, error: "Could not load this file." };
+    }
+
+    return {
+      success: true,
+      data: { text, html: await highlightCode(text, getLanguageId(file.name)) },
+    };
   },
 );

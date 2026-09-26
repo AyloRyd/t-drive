@@ -2,9 +2,10 @@ import { FileIcon } from "./file-icon";
 import Link from "next/link";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ItemActions } from "./item-actions";
-import { formatDate, formatSize } from "~/lib/utils";
+import { formatDate, formatSize, isModifiedClick } from "~/lib/utils";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useSelectedItems } from "~/hooks/use-selected-items";
+import { useFileViewer } from "~/hooks/use-file-viewer";
 
 export default function DriveContentsList(props: {
   files: DBFileType[];
@@ -69,6 +70,9 @@ function DriveItemRow({
   isSelected: boolean;
   onToggleSelect: () => void;
 }) {
+  const openViewer = useFileViewer((state) => state.openViewer);
+  const file = !isFolder && "url" in item ? item : null;
+
   const content = (
     <div className="grid grid-cols-12 items-center gap-4">
       <div className="col-span-7 flex items-center overflow-hidden md:col-span-7">
@@ -112,8 +116,14 @@ function DriveItemRow({
         </Link>
       ) : (
         <a
-          href={"url" in item ? item.url : "#"}
+          href={file?.url ?? "#"}
           target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            if (!file || isModifiedClick(e)) return;
+            e.preventDefault();
+            openViewer(file);
+          }}
           className="block px-6 py-4"
         >
           {content}
