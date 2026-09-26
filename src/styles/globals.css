@@ -162,12 +162,15 @@
 
 /* File viewer: Shiki output and rendered markdown. */
 @layer components {
+  /* w-max, not w-fit: fit-content clamps to the container, so the theme
+     background would stop at the visible edge once the code scrolls
+     sideways. max-content sizes to the longest line. */
   .drive-code pre {
-    @apply min-h-full py-4 text-[13px] leading-6;
+    @apply min-h-full w-max min-w-full py-4 text-[13px] leading-6;
   }
 
   .drive-code code {
-    @apply block w-fit min-w-full;
+    @apply block w-max min-w-full;
     counter-reset: line;
   }
 

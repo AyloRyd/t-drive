@@ -62,10 +62,10 @@ export function PropertiesDialog({
         <DialogHeader className="px-6 pt-6 pb-4 text-left">
           <DialogTitle>Properties</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col px-6 pb-6">
+        <div className="flex min-w-0 flex-col px-6 pb-6">
           {loading ? (
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-4 border-b border-gray-800 pb-4">
+            <div className="flex min-w-0 flex-col gap-6">
+              <div className="flex min-w-0 items-center gap-4 border-b border-gray-800 pb-4">
                 <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-gray-800"></div>
                 <div className="flex w-full flex-col gap-2">
                   <div className="h-5 w-3/4 animate-pulse rounded bg-gray-800"></div>
@@ -81,12 +81,12 @@ export function PropertiesDialog({
               </div>
             </div>
           ) : data ? (
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-4 border-b border-gray-800 pb-4">
+            <div className="flex min-w-0 flex-col gap-6">
+              <div className="flex min-w-0 items-center gap-4 border-b border-gray-800 pb-4">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-800 text-gray-400">
                   {isFolder ? <FolderIcon size={24} /> : <FileIcon size={24} />}
                 </div>
-                <div className="flex flex-col overflow-hidden">
+                <div className="flex min-w-0 flex-col overflow-hidden">
                   <h3
                     className="truncate text-lg font-semibold text-gray-100"
                     title={data.name}

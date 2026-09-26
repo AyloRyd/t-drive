@@ -1,9 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Download, ExternalLink } from "lucide-react";
+import { Download, ExternalLink, X } from "lucide-react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -44,13 +45,22 @@ export function FileViewerDialog() {
   const file = useFileViewer((state) => state.file);
   const closeViewer = useFileViewer((state) => state.closeViewer);
 
+  // A placeholder has nothing to scroll, so it gets a small self-sized dialog
+  // rather than a mostly-empty full-height one.
+  const hasViewer = file !== null && getViewerKind(file.name) !== null;
+
   return (
     <Dialog open={file !== null} onOpenChange={(open) => !open && closeViewer()}>
       <DialogContent
         aria-describedby={undefined}
-        className="flex h-[85vh] flex-col gap-0 overflow-hidden border border-gray-700/50 bg-gray-900 p-0 text-gray-100 sm:max-w-5xl"
+        showCloseButton={false}
+        className={`flex flex-col gap-0 overflow-hidden border border-gray-700/50 bg-gray-900 p-0 text-gray-100 ${
+          // No height class in the compact case: the dialog is fixed inset-0
+          // with m-auto, so only the base h-fit keeps it shrunk to content.
+          hasViewer ? "h-[85vh] sm:max-w-5xl" : "sm:max-w-md"
+        }`}
       >
-        {file && <ViewerBody file={file} />}
+        {file && <ViewerBody key={file.id} file={file} />}
       </DialogContent>
     </Dialog>
   );
@@ -62,10 +72,10 @@ function ViewerBody({ file }: ViewerProps) {
 
   return (
     <>
-      <DialogHeader className="flex-row items-center gap-3 border-b border-gray-700/50 px-4 py-3 pr-14">
+      <DialogHeader className="flex-row items-center gap-1 border-b border-gray-700/50 py-3 pr-2 pl-4">
         <FileIcon type="file" name={file.name} size={18} />
         <DialogTitle
-          className="min-w-0 flex-1 truncate text-sm font-medium"
+          className="mr-2 min-w-0 flex-1 truncate text-sm font-medium"
           title={file.name}
         >
           {file.name}
@@ -88,6 +98,13 @@ function ViewerBody({ file }: ViewerProps) {
         >
           <ExternalLink size={16} />
         </a>
+        <DialogClose
+          aria-label="Close"
+          title="Close"
+          className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-800 hover:text-white"
+        >
+          <X size={16} />
+        </DialogClose>
       </DialogHeader>
 
       <div className="min-h-0 flex-1 overflow-hidden">

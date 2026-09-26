@@ -25,16 +25,19 @@ export function MarkdownViewer({ file }: { file: DBFileType }) {
 
   return (
     <Tabs defaultValue="preview" className="h-full gap-0">
-      <TabsList
-        variant="line"
-        className="h-9 shrink-0 border-b border-gray-700/50 px-4"
-      >
-        <TabsTrigger value="preview" className="px-3">
-          <Eye size={14} />
+      <TabsList className="h-10 w-full shrink-0 justify-start gap-0 rounded-none border-b border-gray-700/50 bg-gray-950/40 p-0">
+        <TabsTrigger
+          value="preview"
+          className="relative h-10 flex-1 cursor-pointer gap-2 rounded-none border-r border-gray-700/40 px-4 text-xs font-medium text-gray-500 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-teal-400 before:opacity-0 hover:text-gray-300 data-active:bg-gray-900 data-active:text-white data-active:shadow-none data-active:before:opacity-100"
+        >
+          <Eye size={13} />
           Preview
         </TabsTrigger>
-        <TabsTrigger value="source" className="px-3">
-          <FileCode2 size={14} />
+        <TabsTrigger
+          value="source"
+          className="relative h-10 flex-1 cursor-pointer gap-2 rounded-none border-r border-gray-700/40 px-4 text-xs font-medium text-gray-500 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-teal-400 before:opacity-0 hover:text-gray-300 data-active:bg-gray-900 data-active:text-white data-active:shadow-none data-active:before:opacity-100"
+        >
+          <FileCode2 size={13} />
           Source
         </TabsTrigger>
       </TabsList>
