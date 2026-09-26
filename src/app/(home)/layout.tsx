@@ -1,7 +1,7 @@
 export default function Layout(props: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-gray-950 via-gray-900 to-gray-800 p-4 text-white">
-      <main className="text-center">{props.children}</main>
+    <div className="relative flex min-h-[100dvh] flex-col justify-between bg-linear-to-br from-gray-950 via-gray-900 to-gray-800 text-white antialiased selection:bg-emerald-500/20 selection:text-emerald-300">
+      {props.children}
     </div>
   );
 }
