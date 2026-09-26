@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { getFilePropertiesAction } from "~/server/actions/file.actions";
+import { getFile } from "~/server/actions/file.actions";
 import { getFolderPropertiesAction } from "~/server/actions/folder.actions";
 import { formatDate, formatSize } from "~/lib/utils";
 
@@ -47,7 +47,7 @@ export function PropertiesDialog({
         if (res.success && res.data) return res.data as PropertyData;
         throw new Error("Failed to load folder properties");
       } else {
-        const res = await getFilePropertiesAction(id);
+        const res = await getFile(id);
         if (res.success && res.data) return res.data as PropertyData;
         throw new Error("Failed to load file properties");
       }

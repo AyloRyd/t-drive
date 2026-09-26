@@ -1,19 +1,12 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { mutations } from "../db/mutations";
-import { cookies } from "next/headers";
+import { createAction } from "./_utils/create-action";
 
-export async function onboardUser() {
-  const session = await auth();
-  if (!session.userId) {
-    return { error: "Unauthorized" };
-  }
-
-  const rootFolderId = await mutations.onboardUser(session.userId);
-
-  const c = await cookies();
-  c.set("force-refresh", JSON.stringify(Math.random()));
-
-  return { success: true, rootFolderId };
-}
+export const onboardUser = createAction(
+  { withAuth: true, refreshCookies: true },
+  async (session) => {
+    const rootFolderId = await mutations.onboardUser(session.userId);
+    return { success: true, data: { rootFolderId } };
+  },
+);

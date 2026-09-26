@@ -27,18 +27,20 @@ export function useFolderUpload(currentFolderId: string) {
     const uploadedFileIds: string[] = [];
 
     try {
-      const { idMap, error } = await createFolderStructure(
+      const folderResult = await createFolderStructure(
         Array.from(paths),
         currentFolderId,
       );
-      if (error || !idMap) throw new Error(error || "Failed to create folders");
+      if (!folderResult.success) {
+        throw new Error(folderResult.error);
+      }
 
       const groupedFiles = new Map<string, File[]>();
       for (const file of fileArray) {
         const parts = file.webkitRelativePath.split("/");
         parts.pop();
         const folderPath = parts.join("/");
-        const targetId = idMap[folderPath];
+        const targetId = folderResult.data.idMap[folderPath];
         if (!targetId) throw new Error(`Missing ID for path ${folderPath}`);
 
         if (!groupedFiles.has(targetId)) groupedFiles.set(targetId, []);

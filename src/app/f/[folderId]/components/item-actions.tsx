@@ -85,10 +85,11 @@ export function ItemActions({
           submitLabel="Save"
           defaultValue={item.name}
           onSubmit={async (name) => {
-            if (isFolder) {
-              await renameFolder({ folderId: item.id, newName: name });
-            } else {
-              await renameFile({ fileId: item.id, newName: name });
+            const result = isFolder
+              ? await renameFolder({ folderId: item.id, newName: name })
+              : await renameFile({ fileId: item.id, newName: name });
+            if (!result.success) {
+              console.error(result.error);
             }
           }}
         />
@@ -128,10 +129,12 @@ export function ItemActions({
             setOpen(false);
 
             try {
-              if (isFolder) {
-                await deleteFolder(item.id);
-              } else {
-                await deleteFile(item.id);
+              const result = isFolder
+                ? await deleteFolder(item.id)
+                : await deleteFile(item.id);
+              if (!result.success) {
+                console.error(result.error);
+                return;
               }
               incrementProgress();
               await new Promise((resolve) => setTimeout(resolve, 500));

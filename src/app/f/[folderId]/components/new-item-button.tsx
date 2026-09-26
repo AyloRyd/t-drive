@@ -47,7 +47,10 @@ export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
             description="Enter a name for your new folder."
             submitLabel="Create"
             onSubmit={async (name) => {
-              await createFolder(name, currentFolderId);
+              const result = await createFolder(name, currentFolderId);
+              if (!result.success) {
+                console.error(result.error);
+              }
             }}
           />
           <label className="group relative flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-800 focus:bg-gray-800 focus:outline-none">

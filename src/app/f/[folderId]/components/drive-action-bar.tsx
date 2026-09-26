@@ -117,18 +117,22 @@ export function DriveActionBar({
             actionLabel="Delete"
             onAction={async () => {
               startProcess("delete", selectedItems.length, null);
-              deleteMultipleItems(selectedItems)
-                .then(async () => {
-                  updateProgress(selectedItems.length);
-                  await new Promise((resolve) => setTimeout(resolve, 500));
-                  clearSelection();
+              try {
+                const result = await deleteMultipleItems(selectedItems);
+                if (!result.success) {
+                  console.error(result.error);
                   finishProcess();
-                  navigate.refresh();
-                })
-                .catch((e) => {
-                  console.error(e);
-                  finishProcess();
-                });
+                  return;
+                }
+                updateProgress(selectedItems.length);
+                await new Promise((resolve) => setTimeout(resolve, 500));
+                clearSelection();
+                finishProcess();
+                navigate.refresh();
+              } catch (e) {
+                console.error(e);
+                finishProcess();
+              }
             }}
           />
         ) : (

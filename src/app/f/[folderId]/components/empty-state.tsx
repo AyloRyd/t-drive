@@ -41,7 +41,10 @@ export function EmptyState({ currentFolderId }: { currentFolderId: string }) {
           description="Enter a name for your new folder."
           submitLabel="Create"
           onSubmit={async (name) => {
-            await createFolder(name, currentFolderId);
+            const result = await createFolder(name, currentFolderId);
+            if (!result.success) {
+              console.error(result.error);
+            }
           }}
         />
         <label className="group flex cursor-pointer flex-col items-center gap-3 rounded-xl border border-gray-700/50 bg-gray-800/40 px-4 py-6 transition-all hover:border-gray-600 hover:bg-gray-800/70">
