@@ -1,16 +1,14 @@
 import { Folder, FolderUp, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { ActionDialog } from "./action-dialog";
 import { UploadButton } from "~/components/uploadthing";
 import { createFolder } from "~/server/actions/folder.actions";
 import { useFolderUpload } from "~/hooks/use-folder-upload";
-import { useProgress } from "~/hooks/use-progress";
+import { useFileUpload } from "~/hooks/use-file-upload";
 import Image from "next/image";
 
 export function EmptyState({ currentFolderId }: { currentFolderId: string }) {
-  const navigate = useRouter();
   const uploadFolder = useFolderUpload(currentFolderId);
-  const { startProcess, updateProgress, finishProcess } = useProgress();
+  const uploadFile = useFileUpload();
 
   return (
     <div className="flex flex-col items-center justify-center py-16 md:py-24">
@@ -86,23 +84,7 @@ export function EmptyState({ currentFolderId }: { currentFolderId: string }) {
                 },
                 allowedContent: { display: "none" },
               }}
-              onUploadProgress={(p) => {
-                updateProgress(p / 100);
-              }}
-              onUploadBegin={() => {
-                startProcess("upload", 1, null);
-              }}
-              onClientUploadComplete={() => {
-                updateProgress(1);
-                setTimeout(() => {
-                  finishProcess();
-                  navigate.refresh();
-                }, 500);
-              }}
-              onUploadError={(error) => {
-                finishProcess();
-                console.error("Upload failed", error);
-              }}
+              {...uploadFile}
               input={{ folderId: currentFolderId }}
             />
           </div>

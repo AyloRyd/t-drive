@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus, Folder, Upload, FolderUp } from "lucide-react";
-import { useRouter } from "next/navigation";
 import {
   Popover,
   PopoverContent,
@@ -11,16 +10,15 @@ import { ActionDialog } from "./action-dialog";
 import { UploadButton } from "~/components/uploadthing";
 import { createFolder } from "~/server/actions/folder.actions";
 import { useFolderUpload } from "~/hooks/use-folder-upload";
-import { useProgress } from "~/hooks/use-progress";
+import { useFileUpload } from "~/hooks/use-file-upload";
 
 interface NewItemButtonProps {
   currentFolderId: string;
 }
 
 export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
-  const navigate = useRouter();
   const uploadFolder = useFolderUpload(currentFolderId);
-  const { startProcess, updateProgress, finishProcess } = useProgress();
+  const uploadFile = useFileUpload();
 
   return (
     <>
@@ -84,23 +82,7 @@ export function NewItemButton({ currentFolderId }: NewItemButtonProps) {
                   },
                   allowedContent: { display: "none" },
                 }}
-                onUploadProgress={(p) => {
-                  updateProgress(p / 100);
-                }}
-                onUploadBegin={() => {
-                  startProcess("upload", 1, null);
-                }}
-                onClientUploadComplete={() => {
-                  updateProgress(1);
-                  setTimeout(() => {
-                    finishProcess();
-                    navigate.refresh();
-                  }, 500);
-                }}
-                onUploadError={(error) => {
-                  finishProcess();
-                  console.error("Upload failed", error);
-                }}
+                {...uploadFile}
                 input={{ folderId: currentFolderId }}
               />
             </div>
