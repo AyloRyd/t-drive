@@ -10,6 +10,7 @@ import { cn } from "~/lib/utils";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GlobalProgress } from "~/components/global-progress";
+import { UploadErrorDialog } from "~/components/upload-error-dialog";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -50,6 +51,7 @@ export default function RootLayout({
         >
           <QueryProvider>
             <GlobalProgress />
+            <UploadErrorDialog />
             {children}
           </QueryProvider>
         </ClerkProvider>

@@ -2,17 +2,27 @@ import { useRouter } from "next/navigation";
 import { uploadFiles } from "~/components/uploadthing";
 import { cleanupAbortedUpload } from "~/server/actions/file.actions";
 import { createFolderStructure } from "~/server/actions/folder.actions";
+import { checkUploadSizes } from "~/lib/upload";
 import { useProgress } from "./use-progress";
+import { useUploadError } from "./use-upload-error";
 
 export function useFolderUpload(currentFolderId: string) {
   const navigate = useRouter();
   const { startProcess, incrementProgress, finishProcess } = useProgress();
+  const showUploadError = useUploadError((state) => state.showUploadError);
 
   return async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const fileArray = Array.from(files);
+    const { allowed: fileArray, rejection } = checkUploadSizes(
+      Array.from(files),
+    );
+    if (rejection) showUploadError(rejection);
+    if (fileArray.length === 0) {
+      e.target.value = "";
+      return;
+    }
 
     const paths = new Set<string>();
     for (const file of fileArray) {
@@ -73,6 +83,14 @@ export function useFolderUpload(currentFolderId: string) {
       console.error(err);
       if (ctrl.signal.aborted) {
         await cleanupAbortedUpload(uploadedFileIds);
+      } else {
+        showUploadError({
+          title: "Upload failed",
+          message:
+            err instanceof Error
+              ? err.message
+              : "Something went wrong while uploading.",
+        });
       }
     } finally {
       if (!ctrl.signal.aborted) {

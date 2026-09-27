@@ -4,13 +4,14 @@ import { UploadThingError } from "uploadthing/server";
 import z from "zod";
 import { queries } from "~/server/db/queries";
 import { mutations } from "~/server/db/mutations";
+import { MAX_UPLOAD_SIZE } from "~/lib/upload";
 
 const file = createUploadthing();
 
 export const ourFileRouter = {
   driveUploader: file({
     blob: {
-      maxFileSize: "1GB",
+      maxFileSize: MAX_UPLOAD_SIZE,
       maxFileCount: 9999,
     },
   })

@@ -19,7 +19,22 @@ export type FileKind =
   | "unknown";
 
 /** Which viewer, if any, can render a file inside the dialog. */
-export type ViewerKind = "image" | "pdf" | "markdown" | "code" | "text";
+export type ViewerKind =
+  | "image"
+  | "pdf"
+  | "markdown"
+  | "code"
+  | "text"
+  | "video"
+  | "audio";
+
+/**
+ * Viewers with nothing to scroll; they get a self-sized dialog rather than
+ * a mostly-empty full-height one.
+ */
+export function isCompactViewer(kind: ViewerKind | null): boolean {
+  return kind === null || kind === "audio";
+}
 
 /** Text-based files larger than this are not fetched for preview. */
 export const TEXT_PREVIEW_LIMIT_BYTES = 1024 * 1024;
@@ -75,6 +90,10 @@ export function getViewerKind(name: string): ViewerKind | null {
       return "code";
     case "text":
       return "text";
+    case "video":
+      return "video";
+    case "audio":
+      return "audio";
     default:
       return null;
   }

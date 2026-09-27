@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { uploadFiles } from "~/components/uploadthing";
 import { Upload } from "lucide-react";
 import { useProgress } from "~/hooks/use-progress";
+import { useUploadError } from "~/hooks/use-upload-error";
+import { checkUploadSizes } from "~/lib/upload";
 
 interface DriveDropzoneProps {
   children: React.ReactNode;
@@ -17,6 +19,7 @@ export function DriveDropzone({
 }: DriveDropzoneProps) {
   const navigate = useRouter();
   const { startProcess, incrementProgress, finishProcess } = useProgress();
+  const showUploadError = useUploadError((state) => state.showUploadError);
 
   const [isDragging, setIsDragging] = useState(false);
 
@@ -24,13 +27,17 @@ export function DriveDropzone({
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const files = Array.from(e.dataTransfer.files);
+      const { allowed, rejection } = checkUploadSizes(
+        Array.from(e.dataTransfer.files),
+      );
+      if (rejection) showUploadError(rejection);
+      if (allowed.length === 0) return;
 
       const ctrl = new AbortController();
-      startProcess("upload", files.length, ctrl);
+      startProcess("upload", allowed.length, ctrl);
 
       try {
-        for (const file of files) {
+        for (const file of allowed) {
           if (ctrl.signal.aborted) break;
 
           await uploadFiles("driveUploader", {
@@ -42,6 +49,13 @@ export function DriveDropzone({
         }
       } catch (err) {
         console.error("Upload failed", err);
+        showUploadError({
+          title: "Upload failed",
+          message:
+            err instanceof Error
+              ? err.message
+              : "Something went wrong while uploading.",
+        });
       } finally {
         if (!ctrl.signal.aborted) {
           await new Promise((resolve) => setTimeout(resolve, 500));

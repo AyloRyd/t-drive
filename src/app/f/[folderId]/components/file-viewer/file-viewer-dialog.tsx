@@ -10,7 +10,11 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { useFileViewer } from "~/hooks/use-file-viewer";
-import { getViewerKind, type ViewerKind } from "~/lib/file-kind";
+import {
+  getViewerKind,
+  isCompactViewer,
+  type ViewerKind,
+} from "~/lib/file-kind";
 import type { DBFileType } from "~/server/db/schema";
 import { FileIcon } from "../file-icon";
 import { ViewerSkeleton } from "./code-block";
@@ -39,15 +43,21 @@ const VIEWERS: Record<ViewerKind, React.ComponentType<ViewerProps>> = {
   text: dynamic(() => import("./text-viewer").then((m) => m.TextViewer), {
     loading: ViewerSkeleton,
   }),
+  video: dynamic(() => import("./video-viewer").then((m) => m.VideoViewer), {
+    loading: ViewerSkeleton,
+  }),
+  audio: dynamic(() => import("./audio-viewer").then((m) => m.AudioViewer), {
+    loading: ViewerSkeleton,
+  }),
 };
 
 export function FileViewerDialog() {
   const file = useFileViewer((state) => state.file);
   const closeViewer = useFileViewer((state) => state.closeViewer);
 
-  // A placeholder has nothing to scroll, so it gets a small self-sized dialog
-  // rather than a mostly-empty full-height one.
-  const hasViewer = file !== null && getViewerKind(file.name) !== null;
+  // Placeholders and audio have nothing to scroll, so they get a small
+  // self-sized dialog rather than a mostly-empty full-height one.
+  const compact = file === null || isCompactViewer(getViewerKind(file.name));
 
   return (
     <Dialog open={file !== null} onOpenChange={(open) => !open && closeViewer()}>
@@ -57,7 +67,7 @@ export function FileViewerDialog() {
         className={`flex flex-col gap-0 overflow-hidden border border-gray-700/50 bg-gray-900 p-0 text-gray-100 ${
           // No height class in the compact case: the dialog is fixed inset-0
           // with m-auto, so only the base h-fit keeps it shrunk to content.
-          hasViewer ? "h-[85vh] sm:max-w-5xl" : "sm:max-w-md"
+          compact ? "sm:max-w-md" : "h-[85vh] sm:max-w-5xl"
         }`}
       >
         {file && <ViewerBody key={file.id} file={file} />}
