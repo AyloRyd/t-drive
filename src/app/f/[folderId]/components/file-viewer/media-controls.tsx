@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import {
   Maximize,
+  Minimize,
   Pause,
   Play,
   Volume1,
@@ -15,10 +16,12 @@ import type { MediaController } from "./use-media-controller";
 export function MediaControls({
   media,
   onFullscreen,
+  isFullscreen = false,
   className = "",
 }: {
   media: MediaController;
   onFullscreen?: () => void;
+  isFullscreen?: boolean;
   className?: string;
 }) {
   // Open state is tracked rather than left to :hover so a drag that strays
@@ -97,8 +100,11 @@ export function MediaControls({
       </div>
 
       {onFullscreen && (
-        <IconButton label="Fullscreen" onClick={onFullscreen}>
-          <Maximize size={16} />
+        <IconButton
+          label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+          onClick={onFullscreen}
+        >
+          {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </IconButton>
       )}
     </div>

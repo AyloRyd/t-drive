@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Play } from "lucide-react";
 import type { DBFileType } from "~/server/db/schema";
 import { getExtension } from "~/lib/file-kind";
@@ -12,8 +12,27 @@ export function VideoViewer({ file }: { file: DBFileType }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const media = useMediaController(videoRef);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const { toggle, skip, setVolume, toggleMute } = media;
+
+  const toggleFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+    } else {
+      void containerRef.current?.requestFullscreen?.().catch(() => undefined);
+    }
+  }, []);
+
+  // Tracks the document rather than our own clicks, so Escape and the
+  // browser's own controls keep the button and its icon in step.
+  useEffect(() => {
+    const onChange = () =>
+      setIsFullscreen(document.fullscreenElement === containerRef.current);
+
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -27,6 +46,7 @@ export function VideoViewer({ file }: { file: DBFileType }) {
       else if (e.key === "ArrowUp") setVolume(el.volume + 0.1);
       else if (e.key === "ArrowDown") setVolume(el.volume - 0.1);
       else if (e.key === "m") toggleMute();
+      else if (e.key === "f") toggleFullscreen();
       else return;
 
       e.preventDefault();
@@ -34,7 +54,7 @@ export function VideoViewer({ file }: { file: DBFileType }) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [toggle, skip, setVolume, toggleMute]);
+  }, [toggle, skip, setVolume, toggleMute, toggleFullscreen]);
 
   if (media.failed) {
     return (
@@ -45,14 +65,12 @@ export function VideoViewer({ file }: { file: DBFileType }) {
     );
   }
 
-  const fullscreen = () => void containerRef.current?.requestFullscreen?.();
-
   return (
     <div ref={containerRef} className="flex h-full flex-col bg-black">
       <div
         className="relative flex min-h-0 flex-1 items-center justify-center"
         onClick={toggle}
-        onDoubleClick={fullscreen}
+        onDoubleClick={toggleFullscreen}
       >
         <video
           ref={videoRef}
@@ -76,7 +94,11 @@ export function VideoViewer({ file }: { file: DBFileType }) {
       </div>
 
       <div className="shrink-0 p-3">
-        <MediaControls media={media} onFullscreen={fullscreen} />
+        <MediaControls
+          media={media}
+          onFullscreen={toggleFullscreen}
+          isFullscreen={isFullscreen}
+        />
       </div>
     </div>
   );
