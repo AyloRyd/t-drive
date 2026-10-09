@@ -4,10 +4,11 @@ import Link from "next/link";
 import { ArrowRight, Github } from "lucide-react";
 import { GridBackground } from "~/components/grid-background";
 import { queries } from "~/server/db/queries";
-import { githubUrl } from "~/lib/site";
+import { githubUrl, siteDescription, siteName, siteUrl } from "~/lib/site";
 import { FloatingIcons } from "./components/floating-icons";
 import { SiteHeader } from "./components/site-header";
 import {
+  FAQ,
   FaqSection,
   Features,
   FileTypes,
@@ -93,6 +94,34 @@ export default async function HomePage() {
       <FaqSection />
       <SiteFooter destination={destination} />
 
+      {/* Structured data: lets Google show rich results for the app and the FAQ. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: siteName,
+              url: siteUrl,
+              description: siteDescription,
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+              codeRepository: githubUrl,
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: FAQ.map(({ q, a }) => ({
+                "@type": "Question",
+                name: q,
+                acceptedAnswer: { "@type": "Answer", text: a },
+              })),
+            },
+          ]),
+        }}
+      />
     </GridBackground>
   );
 }
