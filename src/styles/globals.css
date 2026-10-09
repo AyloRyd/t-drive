@@ -278,3 +278,20 @@
     @apply my-4 max-w-full rounded-lg;
   }
 }
+
+/* Landing: drifting file-type tiles. */
+@keyframes drive-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -14px;
+  }
+}
+
+@layer components {
+  .drive-float {
+    animation: drive-float var(--float-duration, 8s) ease-in-out infinite;
+  }
+}
