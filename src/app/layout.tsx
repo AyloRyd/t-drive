@@ -6,6 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { QueryProvider } from "~/components/query-provider";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { cn } from "~/lib/utils";
+import { siteDescription, siteName, siteUrl } from "~/lib/site";
 
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -25,12 +26,42 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // Resolves every relative URL below (and any canonical) against the real
+  // origin, which Open Graph and canonical tags require to be absolute.
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "t-drive",
-    template: "%s | t-drive",
+    default: `${siteName} — file storage for the modern web`,
+    template: `%s | ${siteName}`,
   },
-  description: "Secure, fast, and easy file storage for the modern web",
+  description: siteDescription,
+  applicationName: siteName,
+  keywords: [
+    "file storage",
+    "cloud drive",
+    "file sharing",
+    "folder upload",
+    "file preview",
+  ],
+  alternates: { canonical: "/" },
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName,
+    title: `${siteName} — file storage for the modern web`,
+    description: siteDescription,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteName} — file storage for the modern web`,
+    description: siteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
 };
 
 export default function RootLayout({

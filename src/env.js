@@ -14,12 +14,17 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+    // Public origin of the deployment, used for canonical URLs, the sitemap
+    // and robots.txt. Must be set in production or search engines will be
+    // pointed at localhost.
+    NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
   },
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,

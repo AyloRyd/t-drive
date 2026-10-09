@@ -3,6 +3,12 @@ import { notFound } from "next/navigation";
 import { queries } from "~/server/db/queries";
 import DriveContents from "./components/drive-contetns";
 
+export const metadata = {
+  title: "Your files",
+  // Signed-in surface: never index, and don't follow into it.
+  robots: { index: false, follow: false },
+};
+
 export default async function FolderPage(props: {
   params: Promise<{ folderId: string }>;
 }) {

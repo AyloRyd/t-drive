@@ -5,6 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { LogIn } from "lucide-react";
 
+export const metadata = {
+  title: "Sign in",
+  // Signed-in surface: never index, and don't follow into it.
+  robots: { index: false, follow: false },
+};
+
 export default async function SignInPage() {
   const session = await auth();
   if (session.userId) {
