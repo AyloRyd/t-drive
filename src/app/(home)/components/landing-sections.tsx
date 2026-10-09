@@ -10,6 +10,7 @@ import {
   MousePointerClick,
 } from "lucide-react";
 import { githubUrl } from "~/lib/site";
+import { AuthLink } from "./auth-link";
 
 const FEATURES = [
   {
@@ -158,7 +159,7 @@ export function FaqSection() {
   );
 }
 
-export function SiteFooter({ destination }: { destination: string }) {
+export function SiteFooter() {
   return (
     <footer className="border-t border-white/5">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-6 py-14 text-center">
@@ -166,12 +167,11 @@ export function SiteFooter({ destination }: { destination: string }) {
           Put your files somewhere calm
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href={destination}
+          <AuthLink
+            signedInLabel="Open your drive"
+            signedOutLabel="Get started"
             className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-gray-950 transition-colors hover:bg-gray-100"
-          >
-            Get started
-          </Link>
+          />
           <Link
             href={githubUrl}
             target="_blank"

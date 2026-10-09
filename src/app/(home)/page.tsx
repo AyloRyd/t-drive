@@ -1,10 +1,9 @@
-import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Github } from "lucide-react";
 import { GridBackground } from "~/components/grid-background";
-import { queries } from "~/server/db/queries";
 import { githubUrl, siteDescription, siteName, siteUrl } from "~/lib/site";
+import { AuthLink } from "./components/auth-link";
 import { FloatingIcons } from "./components/floating-icons";
 import { SiteHeader } from "./components/site-header";
 import {
@@ -15,20 +14,15 @@ import {
   SiteFooter,
 } from "./components/landing-sections";
 
-export default async function HomePage() {
-  const session = await auth();
-  const rootFolder = session.userId
-    ? await queries.getRootFolderForUser(session.userId)
-    : null;
-  const destination = session.userId
-    ? rootFolder
-      ? `/f/${rootFolder.id}`
-      : "/drive"
-    : "/sign-in";
-
+/**
+ * Static, with no server-side auth: this route is deliberately kept out of the
+ * Clerk middleware (see src/proxy.ts) so crawlers can fetch it. Anything that
+ * depends on the visitor being signed in resolves on the client in AuthLink.
+ */
+export default function HomePage() {
   return (
     <GridBackground>
-      <SiteHeader destination={destination} signedIn={!!session.userId} />
+      <SiteHeader />
 
       {/* Hero */}
       <section className="relative isolate overflow-hidden px-6 pt-20 pb-20 sm:pt-36 sm:pb-32">
@@ -49,13 +43,14 @@ export default async function HomePage() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href={destination}
+            <AuthLink
+              signedInLabel="Open your drive"
+              signedOutLabel="Get started free"
+              icon={
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              }
               className="group inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-gray-950 shadow-[0_0_40px_rgba(16,185,129,0.18)] transition-all hover:scale-[1.02] hover:bg-gray-100 active:scale-[0.98]"
-            >
-              {session.userId ? "Open your drive" : "Get started free"}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            />
             <Link
               href={githubUrl}
               target="_blank"
@@ -92,7 +87,7 @@ export default async function HomePage() {
       <Features />
       <FileTypes />
       <FaqSection />
-      <SiteFooter destination={destination} />
+      <SiteFooter />
 
       {/* Structured data: lets Google show rich results for the app and the FAQ. */}
       <script
