@@ -295,3 +295,31 @@
     animation: drive-float var(--float-duration, 8s) ease-in-out infinite;
   }
 }
+
+/* Clerk has no supported option to turn off the "Last used" badge, so it is
+   hidden here. Unlayered on purpose: unlayered rules outrank every @layer,
+   including Clerk's own. */
+.cl-lastAuthenticationStrategyBadge {
+  display: none !important;
+}
+
+/* Clerk derives the primary button's border from colorPrimary, which reads as
+   a green halo around the white CTA. */
+.cl-formButtonPrimary {
+  border-color: transparent !important;
+}
+
+/* The play-triangle Clerk appends after button labels. */
+.cl-buttonArrowIcon {
+  display: none !important;
+}
+
+/* colorBackground: transparent leaves the social buttons unfilled, and Clerk's
+   own rule beats the utility classes, so set the fill here. */
+.cl-socialButtonsBlockButton {
+  background-color: #111827 !important;
+}
+
+.cl-socialButtonsBlockButton:hover {
+  background-color: #1b2432 !important;
+}
