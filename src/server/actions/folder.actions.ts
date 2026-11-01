@@ -1,12 +1,8 @@
 "use server";
 
-import { UTApi } from "uploadthing/server";
 import { mutations } from "../db/mutations";
 import { queries } from "../db/queries";
-import { env } from "~/env";
 import { createAction } from "./_utils/create-action";
-
-const utApi = new UTApi();
 
 export const createFolder = createAction(
   { withAuth: true, refreshCookies: true },
@@ -28,30 +24,6 @@ export const renameFolder = createAction(
     }
 
     await mutations.renameFolderById(folderId, session.userId, newName);
-
-    return { success: true, data: {} };
-  },
-);
-
-export const deleteFolder = createAction(
-  { withAuth: true, refreshCookies: true },
-  async (session, folderId: string) => {
-    const targetFolder = await queries.getFolderById(folderId, session.userId);
-    if (!targetFolder) {
-      return { success: false, error: "Folder not found" };
-    }
-
-    const { filesToDelete } = await mutations.deleteFolderAndChildren(
-      folderId,
-      session.userId,
-    );
-
-    if (filesToDelete && filesToDelete.length > 0) {
-      const utapiResult = await utApi.deleteFiles(
-        filesToDelete.map((f) => f.url.replace(env.UPLOADTHING_APP_URL, "")),
-      );
-      console.log(utapiResult);
-    }
 
     return { success: true, data: {} };
   },

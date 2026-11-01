@@ -17,6 +17,8 @@ export const filesTable = pgTable(
     url: text("url").notNull(),
     parent: text("parent").notNull(),
     created_at: timestamp("created_at").notNull().defaultNow(),
+    /** Set when the item was moved to trash; null while it's live. */
+    deleted_at: timestamp("deleted_at"),
   },
   (t) => {
     return [
@@ -36,6 +38,12 @@ export const foldersTable = pgTable(
     name: text("name").notNull(),
     parent: text("parent"),
     created_at: timestamp("created_at").notNull().defaultNow(),
+    /**
+     * Set when this folder itself was moved to trash. Its contents are left
+     * untouched - they're hidden because an ancestor is trashed - so a
+     * restore brings the whole tree back exactly as it was.
+     */
+    deleted_at: timestamp("deleted_at"),
   },
   (t) => {
     return [

@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { queries } from "~/server/db/queries";
+import { countTrash } from "~/server/services/trash";
 import DriveContents from "./components/drive-contetns";
 
 export const metadata = {
@@ -24,11 +25,18 @@ export default async function FolderPage(props: {
     if (driveData.error === "Unauthorized") {
       notFound();
     }
+    // A bookmark or stale tab pointing into trashed content.
+    if (driveData.error === "Trashed") {
+      redirect("/trash");
+    }
     throw new Error("Unexpected error occured");
   }
   const { files, folders, parents } = driveData;
 
-  const rootFolder = await queries.getRootFolderForUser(session.userId);
+  const [rootFolder, trashCount] = await Promise.all([
+    queries.getRootFolderForUser(session.userId),
+    countTrash(session.userId),
+  ]);
   if (!rootFolder) {
     notFound();
   }
@@ -40,6 +48,7 @@ export default async function FolderPage(props: {
       parents={parents}
       currentFolderId={params.folderId}
       rootFolderId={rootFolder.id}
+      trashCount={trashCount}
     />
   );
 }

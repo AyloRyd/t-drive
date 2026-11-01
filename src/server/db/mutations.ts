@@ -2,7 +2,7 @@ import "server-only";
 
 import { db } from "~/server/db";
 import { filesTable, foldersTable } from "~/server/db/schema";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export const mutations = {
   createFile: async function (input: {
@@ -66,63 +66,6 @@ export const mutations = {
       .where(
         and(eq(foldersTable.id, folderId), eq(foldersTable.ownerId, userId)),
       );
-  },
-
-  deleteFolderAndChildren: async function (folderId: string, userId: string) {
-    const allFolders = await db
-      .select()
-      .from(foldersTable)
-      .where(eq(foldersTable.ownerId, userId));
-
-    const foldersToDelete = new Set<string>([folderId]);
-    let added = true;
-    while (added) {
-      added = false;
-      for (const folder of allFolders) {
-        if (
-          folder.parent !== null &&
-          foldersToDelete.has(folder.parent) &&
-          !foldersToDelete.has(folder.id)
-        ) {
-          foldersToDelete.add(folder.id);
-          added = true;
-        }
-      }
-    }
-
-    const foldersToDeleteArray = Array.from(foldersToDelete);
-
-    const filesToDelete = await db
-      .select()
-      .from(filesTable)
-      .where(
-        and(
-          inArray(filesTable.parent, foldersToDeleteArray),
-          eq(filesTable.ownerId, userId),
-        ),
-      );
-
-    if (filesToDelete.length > 0) {
-      await db
-        .delete(filesTable)
-        .where(
-          and(
-            inArray(filesTable.parent, foldersToDeleteArray),
-            eq(filesTable.ownerId, userId),
-          ),
-        );
-    }
-
-    await db
-      .delete(foldersTable)
-      .where(
-        and(
-          inArray(foldersTable.id, foldersToDeleteArray),
-          eq(foldersTable.ownerId, userId),
-        ),
-      );
-
-    return { filesToDelete };
   },
 
   onboardUser: async function (userId: string) {

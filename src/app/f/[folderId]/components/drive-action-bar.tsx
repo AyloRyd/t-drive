@@ -2,14 +2,12 @@
 
 import { Trash2, List, LayoutGrid, Download } from "lucide-react";
 import { Checkbox } from "~/components/ui/checkbox";
-import { ConfirmDialog } from "./confirm-dialog";
-import { deleteMultipleItems } from "~/server/actions/bulk.actions";
 import { TabsList, TabsTrigger } from "~/components/ui/tabs";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { NewItemButton } from "./new-item-button";
 import { useSelectedItems } from "~/hooks/use-selected-items";
 import { useProgress } from "~/hooks/use-progress";
-import { useRouter } from "next/navigation";
+import { useMoveToTrash } from "~/hooks/use-move-to-trash";
 
 interface DriveActionBarProps {
   currentFolderId: string;
@@ -24,7 +22,7 @@ export function DriveActionBar({
 }: DriveActionBarProps) {
   const { selectedItems, selectAll, clearSelection } = useSelectedItems();
   const { startProcess, updateProgress, finishProcess } = useProgress();
-  const navigate = useRouter();
+  const moveItemsToTrash = useMoveToTrash();
 
   const totalItems = files.length + folders.length;
   const allSelected = totalItems > 0 && selectedItems.length === totalItems;
@@ -105,44 +103,22 @@ export function DriveActionBar({
         >
           <Download size={18} />
         </button>
-        {someSelected ? (
-          <ConfirmDialog
-            trigger={
-              <button className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-red-900/50 text-red-500 transition-colors hover:bg-red-900 hover:text-red-400">
-                <Trash2 size={18} />
-              </button>
-            }
-            title="Delete items?"
-            description={`Are you sure you want to delete ${selectedItems.length} item(s)? This action cannot be undone.`}
-            actionLabel="Delete"
-            onAction={async () => {
-              startProcess("delete", selectedItems.length, null);
-              try {
-                const result = await deleteMultipleItems(selectedItems);
-                if (!result.success) {
-                  console.error(result.error);
-                  finishProcess();
-                  return;
-                }
-                updateProgress(selectedItems.length);
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                clearSelection();
-                finishProcess();
-                navigate.refresh();
-              } catch (e) {
-                console.error(e);
-                finishProcess();
-              }
-            }}
-          />
-        ) : (
-          <button
-            disabled
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800 text-gray-600 opacity-50"
-          >
-            <Trash2 size={18} />
-          </button>
-        )}
+        <button
+          onClick={async () => {
+            const items = [...selectedItems];
+            if (await moveItemsToTrash(items)) clearSelection();
+          }}
+          disabled={!someSelected}
+          className={
+            someSelected
+              ? "flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-red-900/50 text-red-500 transition-colors hover:bg-red-900 hover:text-red-400"
+              : "flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800 text-gray-600 opacity-50"
+          }
+          aria-label="Move selected items to trash"
+          title="Move to trash"
+        >
+          <Trash2 size={18} />
+        </button>
         <TabsList className="h-8 bg-gray-800/50 p-1 ring-1 ring-gray-700/50">
           <TabsTrigger
             value="list"

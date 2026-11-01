@@ -19,6 +19,7 @@ export default function DriveContents(props: {
   parents: DBFolderType[];
   currentFolderId: string;
   rootFolderId: string;
+  trashCount: number;
 }) {
   const [view, setView] = useViewPreference();
   const clearSelection = useSelectedItems((state) => state.clearSelection);
@@ -41,6 +42,7 @@ export default function DriveContents(props: {
               <DriveHeader
                 parents={props.parents}
                 rootFolderId={props.rootFolderId}
+                trashCount={props.trashCount}
               />
               <DriveActionBar
                 currentFolderId={props.currentFolderId}

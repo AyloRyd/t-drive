@@ -32,25 +32,6 @@ export const renameFile = createAction(
   },
 );
 
-export const deleteFile = createAction(
-  { withAuth: true, refreshCookies: true },
-  async (session, fileId: string) => {
-    const file = await queries.getFileById(fileId, session.userId);
-    if (!file) {
-      return { success: false, error: "File not found" };
-    }
-
-    const utapiResult = await utApi.deleteFiles([
-      file.url.replace(env.UPLOADTHING_APP_URL, ""),
-    ]);
-    console.log(utapiResult);
-
-    await mutations.deleteFileById(fileId, session.userId);
-
-    return { success: true, data: {} };
-  },
-);
-
 export const getFile = createAction(
   { withAuth: true, refreshCookies: false },
   async (session, fileId: string) => {

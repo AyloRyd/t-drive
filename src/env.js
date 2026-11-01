@@ -11,6 +11,9 @@ export const env = createEnv({
     UPLOADTHING_TOKEN: z.string(),
     CLERK_WEBHOOK_SECRET: z.string(),
     UPLOADTHING_APP_URL: z.string(),
+    // Authorises Vercel Cron to call /api/cron/purge-trash. Optional so local
+    // builds work without it; the route refuses all requests until it's set.
+    CRON_SECRET: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -29,6 +32,7 @@ export const env = createEnv({
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
     UPLOADTHING_APP_URL: process.env.UPLOADTHING_APP_URL,
+    CRON_SECRET: process.env.CRON_SECRET,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,

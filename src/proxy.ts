@@ -19,6 +19,9 @@ const PUBLIC_PATHS = new Set([
   "/robots.txt",
   "/sitemap.xml",
   "/opengraph-image",
+  // Called by Vercel Cron, which has no Clerk session either. The route
+  // authenticates the request itself with CRON_SECRET.
+  "/api/cron/purge-trash",
 ]);
 
 const clerk = clerkMiddleware();

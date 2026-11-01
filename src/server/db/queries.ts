@@ -13,6 +13,7 @@ export const queries = {
         and(
           eq(foldersTable.parent, folderId),
           eq(foldersTable.ownerId, userId),
+          isNull(foldersTable.deleted_at),
         ),
       )
       .orderBy(foldersTable.name);
@@ -23,7 +24,11 @@ export const queries = {
       .select()
       .from(filesTable)
       .where(
-        and(eq(filesTable.parent, folderId), eq(filesTable.ownerId, userId)),
+        and(
+          eq(filesTable.parent, folderId),
+          eq(filesTable.ownerId, userId),
+          isNull(filesTable.deleted_at),
+        ),
       )
       .orderBy(filesTable.name);
   },
@@ -51,6 +56,12 @@ export const queries = {
 
     if ("error" in parents) {
       return { error: "Unexpected error occured" };
+    }
+
+    // `parents` runs from below the root down to this folder itself, so any
+    // trashed entry means the folder is in the trash or inside a trashed one.
+    if (parents.some((p) => p.deleted_at !== null)) {
+      return { error: "Trashed" as const };
     }
 
     return {
@@ -118,10 +129,13 @@ export const queries = {
     const folder = await queries.getFolderById(folderId, userId);
     if (!folder) return null;
 
+    // Trashed folders are left out, so nothing beneath them is reached.
     const allFolders = await db
       .select()
       .from(foldersTable)
-      .where(eq(foldersTable.ownerId, userId));
+      .where(
+        and(eq(foldersTable.ownerId, userId), isNull(foldersTable.deleted_at)),
+      );
 
     const foldersUnder = new Set<string>([folderId]);
     let added = true;
@@ -150,6 +164,7 @@ export const queries = {
           and(
             inArray(filesTable.parent, foldersUnderArray),
             eq(filesTable.ownerId, userId),
+            isNull(filesTable.deleted_at),
           ),
         );
     }

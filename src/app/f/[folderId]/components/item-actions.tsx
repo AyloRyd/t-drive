@@ -7,15 +7,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { deleteFile, renameFile } from "~/server/actions/file.actions";
-import { deleteFolder, renameFolder } from "~/server/actions/folder.actions";
+import { renameFile } from "~/server/actions/file.actions";
+import { renameFolder } from "~/server/actions/folder.actions";
 import type { DBFileType, DBFolderType } from "~/server/db/schema";
 import { ActionDialog } from "./action-dialog";
-import { ConfirmDialog } from "./confirm-dialog";
 import { PropertiesDialog } from "./properties-dialog";
 import { useState } from "react";
-import { useProgress } from "~/hooks/use-progress";
-import { useRouter } from "next/navigation";
+import { useMoveToTrash } from "~/hooks/use-move-to-trash";
 import type { DriveItemType } from "~/lib/types";
 
 export function ItemActions({
@@ -26,8 +24,7 @@ export function ItemActions({
   isFolder: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const { startProcess, incrementProgress, finishProcess } = useProgress();
-  const navigate = useRouter();
+  const moveItemToTrash = useMoveToTrash();
 
   function handleDownload(driveItemType: DriveItemType) {
     return async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -110,40 +107,20 @@ export function ItemActions({
             Download
           </button>
         )}
-        <ConfirmDialog
-          trigger={
-            <button className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition-colors hover:bg-red-900/30 hover:text-red-300">
-              <Trash2 size={15} />
-              Delete
-            </button>
-          }
-          title={isFolder ? "Delete folder" : "Delete file"}
-          description={
-            isFolder
-              ? "Are you sure you want to delete this folder? All files and folders inside will be deleted."
-              : "Are you sure you want to delete this file?"
-          }
-          actionLabel="Delete"
-          onAction={async () => {
-            startProcess("delete", 1, null);
+        <button
+          onClick={async (e) => {
+            e.stopPropagation();
             setOpen(false);
-
-            try {
-              const result = isFolder
-                ? await deleteFolder(item.id)
-                : await deleteFile(item.id);
-              if (!result.success) {
-                console.error(result.error);
-                return;
-              }
-              incrementProgress();
-              await new Promise((resolve) => setTimeout(resolve, 500));
-            } finally {
-              finishProcess();
-              navigate.refresh();
-            }
+            await moveItemToTrash(
+              [{ id: item.id, type: isFolder ? "folder" : "file" }],
+              item.name,
+            );
           }}
-        />
+          className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition-colors hover:bg-red-900/30 hover:text-red-300"
+        >
+          <Trash2 size={15} />
+          Move to trash
+        </button>
       </PopoverContent>
     </Popover>
   );
