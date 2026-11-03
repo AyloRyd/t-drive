@@ -47,7 +47,7 @@ export default function DriveHeader(props: {
           </div>
         )}
       </div>
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 items-center gap-5">
         <Link
           href="/trash"
           aria-label={

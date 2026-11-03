@@ -120,8 +120,8 @@ export function TrashContents({
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-gray-800 p-4 font-sans text-gray-100 md:p-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4">
+    <div className="flex min-h-screen flex-col bg-linear-to-br from-gray-950 via-gray-900 to-gray-800 p-4 font-sans text-gray-100 md:p-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4">
         <DriveHeader
           parents={[]}
           rootFolderId={rootFolderId}
@@ -410,7 +410,7 @@ function RowButton({
 
 function EmptyTrash({ rootFolderId }: { rootFolderId: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl bg-gray-800/30 px-6 py-20 text-center ring-1 ring-gray-700/50">
+    <div className="flex flex-1 flex-col items-center justify-center rounded-xl bg-gray-800/30 px-6 py-20 text-center ring-1 ring-gray-700/50">
       <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-800/80 ring-1 ring-gray-700/60">
         <Trash2 size={28} className="text-gray-500" />
       </div>
